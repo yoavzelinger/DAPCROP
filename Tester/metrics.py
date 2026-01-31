@@ -62,5 +62,11 @@ def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
         "none": current_wasted_effort,  # (+ 0)
         "random": current_wasted_effort + (current_undetected_faults_count * current_undetected_wasted_effort) / (current_undetected_faults_count + 1)
     }
-
-    return handling_missing_action[tester_constants.WASTED_EFFORT_MISSING_ACTION]
+            
+    wasted_effort = handling_missing_action[tester_constants.WASTED_EFFORT_MISSING_ACTION]
+    
+    if tester_constants.NORMALIZE_WASTED_EFFORT:
+        # normalize by total number of components
+        wasted_effort /= len(mapped_model) * 100
+    
+    return wasted_effort

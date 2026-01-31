@@ -103,11 +103,11 @@ def group_by_feature(mapped_model: ATreeBasedMappedModel,
         feature_indices_map[node.feature if node.is_internal() else "target"].append(node.component_index)
     return feature_indices_map
 
-def diagnosis_generator(mapped_model,
-                        X_repair,
-                        y_repair,
-                        drifted_features,
-                        diagnosers_data
+def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
+                        X_repair: pd.DataFrame,
+                        y_repair: pd.Series,
+                        drifted_features: list[str],
+                        diagnosers_data: list[dict[str, object]]
                         ) -> Generator[tuple[str, list[int], dict[str, object]], None, None]:
     """
     Generate diagnoses from multiple diagnosers.
@@ -156,7 +156,7 @@ def diagnosis_generator(mapped_model,
         for k in tester_constants.CORRECTLY_IDENTIFIED_K_LIST:
             detected_features_at_k = set(group_by_feature(mapped_model, chain.from_iterable(diagnoses[k])).keys())
             diagnosis_results[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=k)}"] = \
-                get_correctly_identified_ratio(detected_features_at_k, drifted_features)
+                get_correctly_identified_ratio(detected_features_at_k, drifted_features) * 100
         
         yield diagnoser_output_name, diagnosis, diagnosis_results
 
