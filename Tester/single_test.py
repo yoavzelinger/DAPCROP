@@ -223,7 +223,7 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
                 f"{tester_constants.NEW_ALL_RETRAIN_COLUMNS_PREFIX} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": new_all_retrained_accuracy_bump * 100
             }
 
-            for diagnoser_output_name, faulty_nodes_indices, diagnosis_results in diagnosis_generator(mapped_model, X_repair, y_repair, drifted_features, diagnosers_data)
+            for diagnoser_output_name, faulty_nodes_indices, diagnosis_results in diagnosis_generator(mapped_model, X_repair, y_repair, drifted_features, diagnosers_data):
                 current_results_dict.update(diagnosis_results)
                 for fixer_data in fixers_data:
                     fixer_class_name = fixer_data["class_name"]
@@ -336,7 +336,7 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
                 f"{tester_constants.NEW_ALL_RETRAIN_COLUMNS_PREFIX} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": new_all_retrained_accuracy_bump * 100
             }
 
-            for diagnoser_output_name, faulty_nodes_indices, diagnosis_results in diagnosis_generator(mapped_model, X_repair, y_repair, drifted_features, diagnosers_data)
+            for diagnoser_output_name, faulty_nodes_indices, diagnosis_results in diagnosis_generator(mapped_model, X_repair, y_repair, drifted_features, diagnosers_data):
                 current_results_dict.update(diagnosis_results)
                 for fixer_data in fixers_data:
                     fixer_class_name = fixer_data["class_name"]
