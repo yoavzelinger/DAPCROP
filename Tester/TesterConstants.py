@@ -187,7 +187,8 @@ AFTER_ACCURACY_DECREASE_COLUMN_NAME = "after accuracy decrease"
 FAULTY_FEATURES_NAME_SUFFIX = "faulty features"
 DIAGNOSES_NAME_SUFFIX = "diagnoses"
 WASTED_EFFORT_NAME_SUFFIX = "wasted-effort"
-CORRECTLY_IDENTIFIED_NAME_SUFFIX = "correctly-identified"
+CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE = "correctly-identified at {k}"
+CORRECTLY_IDENTIFIED_K_LIST = [1, 3, 5]
 FIX_ACCURACY_NAME_SUFFIX = "fix accuracy"
 FIX_ACCURACY_INCREASE_NAME_SUFFIX = "fix accuracy increase"
 
@@ -211,7 +212,8 @@ for diagnoser_output_name in diagnosers_output_names:
         METRICS_COLUMNS[f"{diagnoser_output_name} {DIAGNOSES_NAME_SUFFIX}"] = "string"
         METRICS_COLUMNS[f"{diagnoser_output_name} {WASTED_EFFORT_NAME_SUFFIX}"] = "float64"
         METRICS_COLUMNS[f"{diagnoser_output_name} {FAULTY_FEATURES_NAME_SUFFIX}"] = "string"
-        METRICS_COLUMNS[f"{diagnoser_output_name} {CORRECTLY_IDENTIFIED_NAME_SUFFIX}"] = "float64"
+        for k in CORRECTLY_IDENTIFIED_K_LIST:
+            METRICS_COLUMNS[f"{diagnoser_output_name} {CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=k)}"] = "float64"
     for fixer_output_name in fixers_output_names:
         METRICS_COLUMNS[f"{diagnoser_output_name}-{fixer_output_name} {FIX_ACCURACY_NAME_SUFFIX}"] = "float64"
         METRICS_COLUMNS[f"{diagnoser_output_name}-{fixer_output_name} {FIX_ACCURACY_INCREASE_NAME_SUFFIX}"] = "float64"

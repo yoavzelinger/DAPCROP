@@ -155,7 +155,7 @@ if __name__ == "__main__":
     for diagnoser_output_name in tester_constants.diagnosers_output_names:
         diagnoser_diagnosis_results = f"{diagnoser_output_name}: xxxx; xxxx;"
         if diagnoser_output_name != Oracle.__name__:
-            diagnoser_diagnosis_results = f"{diagnoser_output_name}: {raw_results[f'{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}'].mean():.2f}; {raw_results[f'{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX}'].mean():.2f}%;"
+            diagnoser_diagnosis_results = f"{diagnoser_output_name}: {raw_results[f'{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}'].mean():.2f}; {raw_results[f'{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=1)}'].mean():.2f}%;"
         for fixer_output_name in tester_constants.fixers_output_names:
             print(f"{diagnoser_diagnosis_results} {fixer_output_name} {raw_results[f'{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}'].mean():.2f}%")
 

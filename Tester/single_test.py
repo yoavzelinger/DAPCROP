@@ -153,10 +153,9 @@ def diagnosis_generator(mapped_model,
             f"{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}": wasted_effort
         }
 
-        K_LIST = [1, 3, 5]  # TODO : replace with constants
-        for k in K_LIST:
+        for k in tester_constants.CORRECTLY_IDENTIFIED_K_LIST:
             detected_features_at_k = set(group_by_feature(mapped_model, chain.from_iterable(diagnoses[k])).keys())
-            diagnosis_results[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX} at {k}"] = \
+            diagnosis_results[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=k)}"] = \
                 get_correctly_identified_ratio(detected_features_at_k, drifted_features)
         
         yield diagnoser_output_name, diagnosis, diagnosis_results
