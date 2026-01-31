@@ -1,11 +1,5 @@
 [
     {
-        "class_name": "Oracle",
-        "parameters": {
-        },
-        "disabled": false
-    },
-    {
         "output_name": "SFLDT",
         "class_name": "SFLDT",
         "parameters": {
