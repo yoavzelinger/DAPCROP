@@ -114,7 +114,12 @@ def build_forest(
     for estimator in model.estimators_:
         estimator.feature_names_in_ = model.feature_names_in_
 
+    estimator: StoredSampleWeightsRandomForestClassifier.StoredSampleWeightsDecisionTreeClassifier
     for estimator in model.estimators_:
+        estimator.sample_weight = pd.concat([
+            pd.Series(estimator.sample_weight, index=X_train.index),
+            pd.Series(0, index=X_validation.index)
+        ]).sort_index().values
         estimator.best_accuracy = accuracy_score(y_validation, estimator.predict(X_validation))
 
     return model
