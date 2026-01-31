@@ -35,13 +35,13 @@ def _load_diagnoser_classes():
 
 _load_diagnoser_classes()
 
-def get_diagnoser(diagnoser_name: str
+def get_diagnoser(diagnoser: str | type[Oracle]
  ) -> ADiagnoser:
     """
     Get a diagnoser class by its name.
     
     Parameters:
-    diagnoser_name (str): The name of the diagnoser class.
+    diagnoser (str | type[Oracle]): The name of the diagnoser class Or the Oracle class
     
     Returns:
     ADiagnoser: The diagnoser class.
@@ -49,10 +49,12 @@ def get_diagnoser(diagnoser_name: str
     Raises:
     ValueError: If the diagnoser class is not found.
     """
-    assert diagnoser_name in DIAGNOSER_CLASSES_DICT, f"Diagnoser {diagnoser_name} is not supported"
-    
-    
-    DiagnoserClass = DIAGNOSER_CLASSES_DICT[diagnoser_name]
+    DiagnoserClass: type[ADiagnoser]
+    if diagnoser is Oracle:
+        DiagnoserClass = Oracle
+    else:
+        assert diagnoser in DIAGNOSER_CLASSES_DICT, f"Diagnoser {diagnoser} is not supported"
+        DiagnoserClass = DIAGNOSER_CLASSES_DICT[diagnoser]
     
     match constants.DRIFTING_MODEL:
         case constants.DriftingModel.DecisionTree:
