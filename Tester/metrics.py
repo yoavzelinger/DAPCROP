@@ -41,8 +41,9 @@ def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
             if diagnosed_faulty_feature not in undetected_faulty_features_nodes: # a wasted effort
                 wasted_effort_nodes.add(diagnosed_faulty_node)
             else:   # relevant fix
-                if tester_constants.WASTED_EFFORT_REQUIRE_FULL_FIX and diagnosed_faulty_node.get_index() in undetected_faulty_features_nodes[diagnosed_faulty_feature]:
-                    undetected_faulty_features_nodes[diagnosed_faulty_feature].remove(diagnosed_faulty_node.get_index())
+                if tester_constants.WASTED_EFFORT_REQUIRE_FULL_FIX:
+                    if diagnosed_faulty_node.get_index() in undetected_faulty_features_nodes[diagnosed_faulty_feature]:
+                        undetected_faulty_features_nodes[diagnosed_faulty_feature].remove(diagnosed_faulty_node.get_index())
                 else:
                     undetected_faulty_features_nodes[diagnosed_faulty_feature] = []
         if are_all_faults_detected():
