@@ -172,7 +172,7 @@ class Dataset:
             if partition == "before":
                 yield (drifted_X, y), drift_severity_level, f"BEFORE_{drift_description}"
                 continue
-            drift_description += f"_window[{self.repair_window_proportion * 100:.1f}%]"
+            drift_description += f"_window[{self.repair_proportion * self.repair_window_proportion * 100:.1f}%]"
             # split to repair and test
             X_repair, y_repair = drifted_X.iloc[:self.repair_window_size], y.iloc[:self.repair_window_size]
             X_test, y_test = drifted_X.iloc[self.test_size:], y.iloc[self.test_size:]
