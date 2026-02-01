@@ -70,7 +70,7 @@ if __name__ == "__main__":
         repair_window_test_sizes = args.repair_window
         repair_windows_string = "-".join(map(str, repair_window_test_sizes))
     repair_window_test_sizes = [round(size, 1) for size in repair_window_test_sizes]
-    print(f"Running tests with repair window sizes: {repair_windows_string if repair_windows_string else 'all'} ({repair_window_test_sizes})")
+    print(f"Running tests with repair window sizes: {repair_windows_string or 'all'}")
 
     min_drift_size, max_drift_size, drift_size_string = tester_constants.MIN_DRIFT_SIZE, tester_constants.MAX_DRIFT_SIZE, ""
     if args.drift_size > 0:
