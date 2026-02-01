@@ -72,6 +72,8 @@ def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
             break
 
     current_wasted_effort = len(wasted_effort_nodes)
+    healthy_nodes_count = len(mapped_model) - sum(map(len, faulty_features_nodes.values()))
+
     wasted_effort: int
     if are_all_faults_detected():
         wasted_effort = current_wasted_effort
@@ -79,7 +81,6 @@ def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
         # Didn't detect all the faulty features, handle all the missing nodes
         current_undetected_faults_count = sum(map(len, undetected_faulty_features_nodes.values()))
 
-        healthy_nodes_count = len(mapped_model) - sum(map(len, faulty_features_nodes.values()))
         assert healthy_nodes_count >= len(wasted_effort_nodes), "Wasted effort nodes count is greater than the healthy nodes count (suppose to be subset of)"
         current_undetected_wasted_effort = healthy_nodes_count - current_wasted_effort
             
