@@ -103,6 +103,10 @@ def group_by_feature(mapped_model: ATreeBasedMappedModel,
         feature_indices_map[node.feature if node.is_internal() else "target"].append(node.get_index())
     return feature_indices_map
 
+class EmptyOracleError(Exception):
+    """ Raised when the Oracle diagnoser cannot find any faulty nodes. """
+    pass
+
 def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
                         X_repair: pd.DataFrame,
                         y_repair: pd.Series,
@@ -127,7 +131,10 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
         }
     print(f"\t\t\t\t{Oracle.__name__} Diagnosing")
     oracle_diagnoser: ADiagnoser = OracleDiagnoserClass(mapped_model, X_repair, y_repair, **oracle_parameters)
-    true_faulty_nodes_indices: list[int] = oracle_diagnoser.get_diagnoses()[0]
+    oracle_diagnoses = oracle_diagnoser.get_diagnoses()
+    if not oracle_diagnoses or not oracle_diagnoses[0]:
+        raise EmptyOracleError("Oracle diagnoser found no faulty nodes.")
+    true_faulty_nodes_indices: list[int] = oracle_diagnoses[0]
     yield Oracle.__name__, true_faulty_nodes_indices, {}
 
     faulty_features_nodes = group_by_feature(mapped_model, true_faulty_nodes_indices)
@@ -224,22 +231,25 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
                 f"{tester_constants.NEW_ALL_RETRAIN_COLUMNS_PREFIX} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": new_all_retrained_accuracy_bump * 100
             }
 
-            for diagnoser_output_name, faulty_nodes_indices, diagnosis_results in diagnosis_generator(mapped_model, X_repair, y_repair, drifted_features, diagnosers_data):
-                current_results_dict.update(diagnosis_results)
-                for fixer_data in fixers_data:
-                    fixer_class_name = fixer_data["class_name"]
-                    fixer_output_name = fixer_data.get("output_name", fixer_class_name)
-                    fixer_parameters = fixer_data.get("parameters")
-                    fixer_class = get_fixer(fixer_class_name)
-                    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    fixed_model = fixer.fix_model()
-                    fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
-                    test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy
-                    current_results_dict.update({
-                        f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}": fixed_test_accuracy * 100,
-                        f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": test_accuracy_bump * 100
-                    })
-            yield current_results_dict
+            try:
+                for diagnoser_output_name, faulty_nodes_indices, diagnosis_results in diagnosis_generator(mapped_model, X_repair, y_repair, drifted_features, diagnosers_data):
+                    current_results_dict.update(diagnosis_results)
+                    for fixer_data in fixers_data:
+                        fixer_class_name = fixer_data["class_name"]
+                        fixer_output_name = fixer_data.get("output_name", fixer_class_name)
+                        fixer_parameters = fixer_data.get("parameters")
+                        fixer_class = get_fixer(fixer_class_name)
+                        fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
+                        fixed_model = fixer.fix_model()
+                        fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
+                        test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy
+                        current_results_dict.update({
+                            f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}": fixed_test_accuracy * 100,
+                            f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": test_accuracy_bump * 100
+                        })
+                yield current_results_dict
+            except EmptyOracleError:
+                continue
         except Exception as e:
             exception_class = e.__class__.__name__
             scenario_description = f"{drift_description}, repair window size: {dataset.repair_window_proportion}"
@@ -337,22 +347,25 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
                 f"{tester_constants.NEW_ALL_RETRAIN_COLUMNS_PREFIX} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": new_all_retrained_accuracy_bump * 100
             }
 
-            for diagnoser_output_name, faulty_nodes_indices, diagnosis_results in diagnosis_generator(mapped_model, X_repair, y_repair, drifted_features, diagnosers_data):
-                current_results_dict.update(diagnosis_results)
-                for fixer_data in fixers_data:
-                    fixer_class_name = fixer_data["class_name"]
-                    fixer_output_name = fixer_data.get("output_name", fixer_class_name)
-                    fixer_parameters = fixer_data.get("parameters")
-                    fixer_class = get_fixer(fixer_class_name)
-                    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    fixed_model = fixer.fix_model()
-                    fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
-                    test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy
-                    current_results_dict.update({
-                        f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}": fixed_test_accuracy * 100,
-                        f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": test_accuracy_bump * 100
-                    })
-            yield current_results_dict
+            try:
+                for diagnoser_output_name, faulty_nodes_indices, diagnosis_results in diagnosis_generator(mapped_model, X_repair, y_repair, drifted_features, diagnosers_data):
+                    current_results_dict.update(diagnosis_results)
+                    for fixer_data in fixers_data:
+                        fixer_class_name = fixer_data["class_name"]
+                        fixer_output_name = fixer_data.get("output_name", fixer_class_name)
+                        fixer_parameters = fixer_data.get("parameters")
+                        fixer_class = get_fixer(fixer_class_name)
+                        fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
+                        fixed_model = fixer.fix_model()
+                        fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
+                        test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy
+                        current_results_dict.update({
+                            f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}": fixed_test_accuracy * 100,
+                            f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": test_accuracy_bump * 100
+                        })
+                yield current_results_dict
+            except EmptyOracleError:
+                continue
         except Exception as e:
             exception_class = e.__class__.__name__
             scenario_description = f"{drift_description}, repair window size: {dataset.repair_window_proportion}"
