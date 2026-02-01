@@ -37,9 +37,13 @@ class MappedDecisionTree(ATreeBasedMappedModel):
             # Use only the trained indices
             assert X is not None and y is not None, "X and y must be provided to fit the model with sample weights"
             sample_weights = model.sample_weight
-            train_indices = X.sample(n=len(X), replace=True, weights=sample_weights).index
-            X = X.loc[train_indices].reset_index(drop=True)
-            y = y.loc[train_indices].reset_index(drop=True)
+            # Create deterministic sampling based on integer sample weights
+            train_indices = []
+            for idx, weight in enumerate(sample_weights):
+                # Add each index as many times as its weight (assuming integer weights)
+                train_indices.extend([idx] * int(weight))
+            X = X.iloc[train_indices].reset_index(drop=True)
+            y = y.iloc[train_indices].reset_index(drop=True)
         super().__init__(model, X, y, feature_types)
 
     def update_model_statistics(self, X: pd.DataFrame, y: pd.Series):
