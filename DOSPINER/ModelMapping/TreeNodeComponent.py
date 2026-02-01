@@ -47,7 +47,7 @@ class TreeNodeComponent:
             class_name (str): The class name.
             spectra_index (int): The index of the node (in the spectra matrix).
         """
-        self.component_index: int = int(component_index)
+        self.component_index: int = component_index
         self.parent = parent
         self.update_children(None, None)
         self.depth = 0 if parent is None else parent.depth + 1
