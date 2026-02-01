@@ -65,10 +65,11 @@ if __name__ == "__main__":
     else:
         print("Skip exceptions is set to False. Exceptions will be raised.")
 
-    repair_window_test_sizes, repair_windows_string = tester_constants.REPAIR_WINDOW_TEST_SIZES, ""
+    repair_window_test_sizes = tester_constants.REPAIR_WINDOW_TEST_SIZES
     if args.repair_window != tester_constants.REPAIR_WINDOW_TEST_SIZES:
         repair_window_test_sizes = args.repair_window
-        repair_windows_string = "-".join(map(str, repair_window_test_sizes))
+    repair_window_test_sizes = [round(size, 1) for size in repair_window_test_sizes]
+    repair_windows_string = "-".join(map(str, repair_window_test_sizes))
     print(f"Running tests with repair window sizes: {repair_windows_string}")
 
     min_drift_size, max_drift_size, drift_size_string = tester_constants.MIN_DRIFT_SIZE, tester_constants.MAX_DRIFT_SIZE, ""

@@ -59,7 +59,7 @@ def drift_tree(mapped_model: ATreeBasedMappedModel,
     if max_drift_size > 0:
         current_max_drift_size = min(current_max_drift_size, max_drift_size)
     for repair_window_test_size in repair_window_test_sizes:
-        print(f"\tRepair window size: {repair_window_test_size * tester_constants.REPAIR_PROPORTION * 100}%")
+        print(f"\tRepair window size: {(repair_window_test_size * tester_constants.REPAIR_PROPORTION * 100):.1f}%")
         dataset.update_repair_window_size(repair_window_test_size)
         for drift_size in range(current_min_drift_size, current_max_drift_size + 1):
             print(f"\t\tDrift size: {drift_size} / {current_max_drift_size} features")
