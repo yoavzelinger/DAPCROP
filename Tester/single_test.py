@@ -125,6 +125,7 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
     oracle_parameters = {
         "actual_faulty_features": drifted_features
         }
+    print(f"\t\t\t\t{Oracle.__name__} Diagnosing")
     oracle_diagnoser: ADiagnoser = OracleDiagnoserClass(mapped_model, X_repair, y_repair, **oracle_parameters)
     true_faulty_nodes_indices: list[int] = oracle_diagnoser.get_diagnoses()[0]
     yield Oracle.__name__, true_faulty_nodes_indices, {}
