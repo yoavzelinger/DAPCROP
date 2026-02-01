@@ -154,7 +154,7 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
         }
 
         for k in tester_constants.CORRECTLY_IDENTIFIED_K_LIST:
-            detected_features_at_k = set(group_by_feature(mapped_model, chain.from_iterable(diagnoses[: k])).keys())
+            detected_features_at_k = list(map(lambda node_index: mapped_model[node_index].feature, chain.from_iterable(diagnoses[: k])))
             diagnosis_results[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=k)}"] = \
                 get_correctly_identified_ratio(detected_features_at_k, drifted_features) * 100
         

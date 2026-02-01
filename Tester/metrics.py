@@ -10,11 +10,23 @@ def get_accuracy(model, X, y):
     y_predicted = model.predict(X)
     return accuracy_score(y, y_predicted)
 
-def get_correctly_identified_ratio(detected_faulty_features: set[str],
+def get_correctly_identified_ratio(detected_faulty_features: list[str],
                                     true_faulty_features: set[str]
                                     ) -> float:
-    identified_features = map(lambda feature: feature in detected_faulty_features, true_faulty_features)
-    return sum(identified_features) / len(true_faulty_features)
+    """
+    Calculate the correctly identified ratio of the diagnoser.
+    Calculated as
+                    | nodes with faulty feature |
+                  _________________________________
+                              | nodes |
+    Parameters:
+    detected_faulty_features (list[str]): The detected faulty features by the diagnoser.
+    true_faulty_features (set[str]): The true faulty features.
+    
+    Returns:
+    float: The correctly identified ratio.
+    """
+    return sum(map(true_faulty_features.__contains__, detected_faulty_features)) / len(detected_faulty_features)
 
 def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
                       diagnoses: list[list[int]],
