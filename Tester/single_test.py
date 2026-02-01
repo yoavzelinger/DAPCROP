@@ -135,9 +135,13 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
     if not oracle_diagnoses or not oracle_diagnoses[0]:
         raise EmptyOracleError("Oracle diagnoser found no faulty nodes.")
     true_faulty_nodes_indices: list[int] = oracle_diagnoses[0]
-    yield Oracle.__name__, true_faulty_nodes_indices, {}
 
     faulty_features_nodes = group_by_feature(mapped_model, true_faulty_nodes_indices)
+    
+    yield Oracle.__name__, true_faulty_nodes_indices, { 
+        tester_constants.DRIFTED_FEATURES_COLUMN_NAME: ", ".join(map(lambda feature: f"{feature}: {faulty_features_nodes[feature]}", faulty_features_nodes))
+    }
+
     drifted_features = list(faulty_features_nodes.keys())
 
     for diagnoser_data in diagnosers_data:
@@ -195,7 +199,6 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
             if pre_drift_repair_accuracy - get_accuracy(sklearn_model, X_repair, y_repair) < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP or post_drift_test_accuracy_drop < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP:   # insignificant drift
                 continue
 
-            faulty_features_nodes = get_drifted_nodes(mapped_model, drifted_features)
 
             X_before_repair, y_before_repair = pd.concat([X_before, X_repair]).reset_index(drop=True), pd.concat([y_before, y_repair]).reset_index(drop=True)
 
@@ -219,7 +222,6 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
                 tester_constants.DRIFT_SIZE_COLUMN_NAME: drift_size,
                 tester_constants.TOTAL_DRIFT_TYPE_COLUMN_NAME: get_total_drift_types(drifted_features_types),
                 tester_constants.DRIFT_SEVERITY_LEVEL_COLUMN_NAME: drift_severity_level,
-                tester_constants.DRIFTED_FEATURES_COLUMN_NAME: ", ".join(map(lambda feature: f"{feature}: {faulty_features_nodes[feature]}", faulty_features_nodes)),
                 tester_constants.DRIFTED_FEATURES_TYPES_COLUMN_NAME: get_drifted_features_types_string(drifted_features_types),
                 tester_constants.DRIFT_DESCRIPTION_COLUMN_NAME: drift_description,
                 tester_constants.ORIGINAL_ACCURACY_COLUMN_NAME: pre_drift_accuracy * 100,
@@ -311,8 +313,6 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
             if pre_drift_accuracy - get_accuracy(mapped_model.model, X_repair, y_repair) < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP or post_drift_test_accuracy_drop < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP:    # insignificant drift
                 continue
 
-            faulty_features_nodes = get_drifted_nodes(mapped_model, drifted_features)
-
             X_before_repair, y_before_repair = pd.concat([X_before, X_repair]).reset_index(drop=True), pd.concat([y_before, y_repair]).reset_index(drop=True)
             
             # Comparable Baselines
@@ -335,7 +335,6 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
                 tester_constants.DRIFT_SIZE_COLUMN_NAME: drift_size,
                 tester_constants.TOTAL_DRIFT_TYPE_COLUMN_NAME: get_total_drift_types(drifted_features_types),
                 tester_constants.DRIFT_SEVERITY_LEVEL_COLUMN_NAME: 1, # v2 does not support severity levels
-                tester_constants.DRIFTED_FEATURES_COLUMN_NAME: ", ".join(map(lambda feature: f"{feature}: {faulty_features_nodes[feature]}", faulty_features_nodes)),
                 tester_constants.DRIFTED_FEATURES_TYPES_COLUMN_NAME: get_drifted_features_types_string(drifted_features_types),
                 tester_constants.DRIFT_DESCRIPTION_COLUMN_NAME: drift_description,
                 tester_constants.ORIGINAL_ACCURACY_COLUMN_NAME: pre_drift_accuracy * 100,
