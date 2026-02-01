@@ -93,6 +93,6 @@ def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
     
     if tester_constants.NORMALIZE_WASTED_EFFORT:
         # normalize by total number of components
-        wasted_effort = wasted_effort / len(mapped_model) * 100
+        wasted_effort = wasted_effort / healthy_nodes_count * 100
     
     return wasted_effort
