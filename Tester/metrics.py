@@ -69,24 +69,27 @@ def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
                 else:
                     undetected_faulty_features_nodes[diagnosed_faulty_feature] = []
         if are_all_faults_detected():
-            return len(wasted_effort_nodes)
-        
-    # Didn't detect all the faulty features, handle all the missing nodes
+            break
 
     current_wasted_effort = len(wasted_effort_nodes)
-    current_undetected_faults_count = sum(map(len, undetected_faulty_features_nodes.values()))
+    wasted_effort: int
+    if are_all_faults_detected():
+        wasted_effort = current_wasted_effort
+    else:
+        # Didn't detect all the faulty features, handle all the missing nodes
+        current_undetected_faults_count = sum(map(len, undetected_faulty_features_nodes.values()))
 
-    healthy_nodes_count = len(mapped_model) - sum(map(len, faulty_features_nodes.values()))
-    assert healthy_nodes_count >= len(wasted_effort_nodes), "Wasted effort nodes count is greater than the healthy nodes count (suppose to be subset of)"
-    current_undetected_wasted_effort = healthy_nodes_count - current_wasted_effort
-        
-    handling_missing_action = {
-        "all": healthy_nodes_count,
-        "none": current_wasted_effort,  # (+ 0)
-        "random": current_wasted_effort + (current_undetected_faults_count * current_undetected_wasted_effort) / (current_undetected_faults_count + 1)
-    }
+        healthy_nodes_count = len(mapped_model) - sum(map(len, faulty_features_nodes.values()))
+        assert healthy_nodes_count >= len(wasted_effort_nodes), "Wasted effort nodes count is greater than the healthy nodes count (suppose to be subset of)"
+        current_undetected_wasted_effort = healthy_nodes_count - current_wasted_effort
             
-    wasted_effort = handling_missing_action[tester_constants.WASTED_EFFORT_MISSING_ACTION]
+        handling_missing_action = {
+            "all": healthy_nodes_count,
+            "none": current_wasted_effort,  # (+ 0)
+            "random": current_wasted_effort + (current_undetected_faults_count * current_undetected_wasted_effort) / (current_undetected_faults_count + 1)
+        }
+                
+        wasted_effort = handling_missing_action[tester_constants.WASTED_EFFORT_MISSING_ACTION]
     
     if tester_constants.NORMALIZE_WASTED_EFFORT:
         # normalize by total number of components
