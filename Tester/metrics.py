@@ -1,4 +1,5 @@
 from copy import deepcopy
+from collections import defaultdict
 from sklearn.metrics import accuracy_score
 
 from DOSPINER import *
@@ -32,15 +33,24 @@ def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
     Returns:
     float: The wasted effort (can be float in case we fix randomly with float expected value).
     """
+    faulty_features_healthy_nodes = defaultdict(list)
+    
+    for node in mapped_model:
+        node_index, node_feature = node.get_index(), node.feature
+        if node_feature in faulty_features_nodes and node_index not in faulty_features_nodes[node_feature]:
+            faulty_features_healthy_nodes[node_feature].append(node_index)
+
     undetected_faulty_features_nodes = deepcopy(faulty_features_nodes)
     wasted_effort_nodes = set()
     are_all_faults_detected = lambda: not any(undetected_faulty_features_nodes.values())
     for diagnosis in diagnoses:
         for diagnosed_faulty_node in map(mapped_model.__getitem__, diagnosis):
             diagnosed_faulty_feature = diagnosed_faulty_node.feature
-            if diagnosed_faulty_feature not in undetected_faulty_features_nodes: # a wasted effort
+            if diagnosed_faulty_feature not in undetected_faulty_features_nodes or diagnosed_faulty_node.get_index() in faulty_features_healthy_nodes[diagnosed_faulty_feature]:
+                # a wasted effort
                 wasted_effort_nodes.add(diagnosed_faulty_node)
-            else:   # relevant fix
+            else:
+                # relevant fix
                 if tester_constants.WASTED_EFFORT_REQUIRE_FULL_FIX:
                     if diagnosed_faulty_node.get_index() in undetected_faulty_features_nodes[diagnosed_faulty_feature]:
                         undetected_faulty_features_nodes[diagnosed_faulty_feature].remove(diagnosed_faulty_node.get_index())
