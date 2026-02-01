@@ -208,7 +208,7 @@ for baseline_output_name in BASELINES_OUTPUT_NAMES:
     METRICS_COLUMNS[f"{baseline_output_name} {FIX_ACCURACY_NAME_SUFFIX}"] = "float64"
     METRICS_COLUMNS[f"{baseline_output_name} {FIX_ACCURACY_INCREASE_NAME_SUFFIX}"] = "float64"
 
-for diagnoser_output_name in diagnosers_output_names:
+for diagnoser_output_name in [Oracle.__name__] + diagnosers_output_names:
     if diagnoser_output_name != Oracle.__name__: 
         METRICS_COLUMNS[f"{diagnoser_output_name} {DIAGNOSES_NAME_SUFFIX}"] = "string"
         METRICS_COLUMNS[f"{diagnoser_output_name} {WASTED_EFFORT_NAME_SUFFIX}"] = "float64"
