@@ -100,7 +100,7 @@ def group_by_feature(mapped_model: ATreeBasedMappedModel,
                      nodes_indices: list[int]) -> dict[str, list[int]]:
     feature_indices_map: dict[str, list[int]] = defaultdict(list)
     for node in map(mapped_model.__getitem__, nodes_indices):
-        feature_indices_map[node.feature if node.is_internal() else "target"].append(node.component_index)
+        feature_indices_map[node.feature if node.is_internal() else "target"].append(node.get_index())
     return feature_indices_map
 
 def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
