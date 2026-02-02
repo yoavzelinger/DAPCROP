@@ -15,7 +15,7 @@ from DOSPINER import *
 import Tester.TesterConstants as tester_constants
 from Tester.DataManagementTools import *
 from Tester.Builders import build_tree, build_forest
-from Tester.metrics import get_accuracy, get_wasted_effort, get_correctly_identified_ratio
+from Tester.metrics import get_accuracy, get_wasted_effort, get_top_k
 
 def get_dataset(directory: str,
                 file_name: str,
@@ -165,10 +165,9 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
             f"{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}": wasted_effort
         }
 
-        for k in tester_constants.CORRECTLY_IDENTIFIED_K_LIST:
-            detected_features_at_k = list(map(lambda node_index: mapped_model[node_index].feature, chain.from_iterable(diagnoses[: k])))
-            diagnosis_results[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=k)}"] = \
-                get_correctly_identified_ratio(detected_features_at_k, drifted_features) * 100
+        for K in tester_constants.CORRECTLY_IDENTIFIED_K_LIST:
+            diagnosis_results[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=K)}"] = \
+                get_top_k(mapped_model, diagnoses, drifted_features, K) * 100
         
         yield diagnoser_output_name, diagnosis, diagnosis_results
 

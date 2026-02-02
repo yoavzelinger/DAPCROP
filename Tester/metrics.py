@@ -10,23 +10,57 @@ def get_accuracy(model, X, y):
     y_predicted = model.predict(X)
     return accuracy_score(y, y_predicted)
 
-def get_correctly_identified_ratio(detected_faulty_features: list[str],
-                                    true_faulty_features: set[str]
-                                    ) -> float:
-    """
-    Calculate the correctly identified ratio of the diagnoser.
-    Calculated as
-                    | nodes with faulty feature |
-                  _________________________________
-                              | nodes |
-    Parameters:
-    detected_faulty_features (list[str]): The detected faulty features by the diagnoser.
-    true_faulty_features (set[str]): The true faulty features.
+def get_top_k(mapped_model: ATreeBasedMappedModel,
+              diagnoses: list[list[int]],
+              faulty_features: set[str],
+              K: int = 1
+              ) -> float:
     
-    Returns:
-    float: The correctly identified ratio.
-    """
-    return sum(map(true_faulty_features.__contains__, detected_faulty_features)) / len(detected_faulty_features)
+    def get_single_correctly_identified_ratio(detected_faulty_features: list[str]) -> float:
+        """
+        Calculate the correctly identified ratio of the diagnoser.
+        Calculated as
+                        | nodes with faulty feature |
+                    _________________________________
+                                | nodes |
+        Parameters:
+        detected_faulty_features (list[str]): The detected faulty features by the diagnoser.
+        true_faulty_features (set[str]): The true faulty features.
+        
+        Returns:
+        float: The correctly identified ratio.
+        """
+        return sum(map(faulty_features.__contains__, detected_faulty_features)) / len(detected_faulty_features)
+    
+    def get_current_correctly_identified_ratio(diagnosis: list[int]) -> float:
+        diagnosis_divided_to_trees: list[list[int]] = [diagnosis]
+        if isinstance(mapped_model, MappedRandomForest):
+            group_by_tree_map = defaultdict(list)
+            for node_index in diagnosis:
+                estimator_index, _ = mapped_model.component_estimator_map[node_index]
+                group_by_tree_map[estimator_index].append(node_index)
+            diagnosis_divided_to_trees = list(group_by_tree_map.values())
+        
+        correctly_identified_ratio_sums: float = 0
+        for tree_diagnosis in diagnosis_divided_to_trees:
+            tree_diagnosis_detected_faulty_features = list(map(lambda node_index: mapped_model[node_index].feature, tree_diagnosis))
+            correctly_identified_ratio_sums += get_single_correctly_identified_ratio(tree_diagnosis_detected_faulty_features)
+        
+        return correctly_identified_ratio_sums / len(diagnosis_divided_to_trees)
+        
+    
+    top_k = 0
+    for k in range(min(K, len(diagnoses))):
+        try:
+            current_diagnosis = diagnoses[k]
+        except IndexError:
+            break
+        finally:
+            top_k += get_current_correctly_identified_ratio(current_diagnosis)
+            if top_k >= 1:
+                break
+
+    return min(1.0, top_k)
 
 def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
                       diagnoses: list[list[int]],
