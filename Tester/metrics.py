@@ -51,14 +51,10 @@ def get_top_k(mapped_model: ATreeBasedMappedModel,
     
     top_k = 0
     for k in range(min(K, len(diagnoses))):
-        try:
-            current_diagnosis = diagnoses[k]
-        except IndexError:
+        current_diagnosis = diagnoses[k]
+        top_k += get_current_correctly_identified_ratio(current_diagnosis)
+        if top_k >= 1:
             break
-        finally:
-            top_k += get_current_correctly_identified_ratio(current_diagnosis)
-            if top_k >= 1:
-                break
 
     return min(1.0, top_k)
 
