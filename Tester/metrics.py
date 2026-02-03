@@ -117,7 +117,9 @@ def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
         handling_missing_action = {
             "all": healthy_nodes_count,
             "none": current_wasted_effort,  # (+ 0)
-            "random": current_wasted_effort + (current_undetected_faults_count * current_undetected_wasted_effort) / (current_undetected_faults_count + 1)
+            "random": current_wasted_effort + (
+                current_undetected_wasted_effort * (current_undetected_faults_count if tester_constants.WASTED_EFFORT_REQUIRE_FULL_FIX else 1)
+                ) / (current_undetected_faults_count + 1)
         }
                 
         wasted_effort = handling_missing_action[tester_constants.WASTED_EFFORT_MISSING_ACTION]
