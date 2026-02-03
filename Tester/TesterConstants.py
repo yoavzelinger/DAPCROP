@@ -55,7 +55,7 @@ MINIMUM_DRIFT_ACCURACY_DROP = 0.1
 
 SKIP_EXCEPTIONS = False
 
-WASTED_EFFORT_REQUIRE_FULL_FIX = True # Fix all faulty features
+WASTED_EFFORT_REQUIRE_FULL_FIX = False # Fix all faulty features
 
 # How to handle "healthy" components did not appear in any diagnoses.
 WASTED_EFFORT_MISSING_ACTIONS = [
