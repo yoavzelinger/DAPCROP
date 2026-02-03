@@ -174,9 +174,10 @@ class Dataset:
                 continue
             drift_description += f"_window[{self.repair_proportion * self.repair_window_proportion * 100:.1f}%]"
             # split to repair and test
-            X_repair, y_repair = drifted_X.iloc[:self.repair_window_size], y.iloc[:self.repair_window_size]
+            X_repair, y_repair = drifted_X.iloc[:self.total_repair_size], y.iloc[:self.total_repair_size]
+            X_repair_window, y_repair_window = drifted_X.iloc[:self.repair_window_size], y.iloc[:self.repair_window_size]
             X_test, y_test = drifted_X.iloc[self.test_size:], y.iloc[self.test_size:]
-            yield (X_repair, y_repair), (X_test, y_test), drift_severity_level, drift_description
+            yield (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description
 
     def get_sorted_data_by_features(self,
                               features: set[str]
@@ -232,7 +233,8 @@ class Dataset:
             after_concept_data = after_concept_data.sample(frac=1, random_state=tester_constants.constants.RANDOM_STATE).reset_index(drop=True)
 
             X_before, y_before = self.split_features_targets(before_concept_data)
-            X_repair, y_repair = self.split_features_targets(after_concept_data.iloc[ :self.repair_window_size])
+            X_repair, y_repair = self.split_features_targets(after_concept_data.iloc[ :self.total_repair_size])
+            X_repair_window, y_repair_window = self.split_features_targets(after_concept_data.iloc[ :self.repair_window_size])
             X_test, y_test = self.split_features_targets(after_concept_data.iloc[-self.test_size: ])
 
-            yield (X_before, y_before), (X_repair, y_repair), (X_test, y_test), drift_description
+            yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_description
