@@ -65,7 +65,11 @@ class SFLDT(ADiagnoser):
         self.inverse_spectra_map: dict[TreeNodeComponent, int]
         self.get_component_spectra_map()
         
-        self.fill_spectra_and_error_vector(X, y)
+        try:
+            self.fill_spectra_and_error_vector(X, y)
+        except self.UnaffectedModelException as e:
+            if not constants.SFLDT_ALLOW_UNAFFECTED_MODELS:
+                raise e
         self.stat = STAT(mapped_model, X, y) if combine_stat else None
 
     def get_component_spectra_map(self):
