@@ -58,9 +58,9 @@ def get_top_k(mapped_model: ATreeBasedMappedModel,
 
     return min(1.0, top_k)
 
-def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
-                      diagnoses: list[list[int]],
-                      faulty_features_nodes: dict[str, list[int]]
+def _get_wasted_effort(mapped_model: ATreeBasedMappedModel,
+                       diagnoses: list[list[int]],
+                       faulty_features_nodes: dict[str, list[int]]
  ) -> float:
     """
     Calculate the wasted effort of the diagnoser.
@@ -129,3 +129,51 @@ def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
         wasted_effort = wasted_effort / healthy_nodes_count * 100
     
     return wasted_effort
+
+def get_wasted_effort(mapped_model: ATreeBasedMappedModel,
+                      diagnoses: list[list[int]],
+                      faulty_features_nodes: dict[str, list[int]]
+ ) -> float:
+    if isinstance(mapped_model, MappedDecisionTree):
+        return _get_wasted_effort(mapped_model, diagnoses, faulty_features_nodes)
+    
+    # split the diagnoses by estimators
+    estimators_diagnoses: dict[int, list[list[int]]] = defaultdict(list)
+    for diagnosis_index, diagnosis in enumerate(diagnoses):
+        for node_index in diagnosis:
+            estimator_index, component_sklearn_index = mapped_model.component_estimator_map[node_index]
+            if len(estimators_diagnoses[estimator_index]) <= diagnosis_index:
+                estimators_diagnoses[estimator_index].append([])
+            estimators_diagnoses[estimator_index][diagnosis_index].append(component_sklearn_index)
+
+    # split the faulty features nodes by estimators
+    estimators_faulty_features_nodes: dict[int, dict[str, list[int]]] = defaultdict(lambda: defaultdict(list))
+    for faulty_feature, faulty_nodes in faulty_features_nodes.items():
+        for node_index in faulty_nodes:
+            estimator_index, component_sklearn_index = mapped_model.component_estimator_map[node_index]
+            estimators_faulty_features_nodes[estimator_index][faulty_feature].append(component_sklearn_index)
+    
+    # calculate wasted effort per estimator
+    summed_wasted_effort: float = 0
+    for estimator_index, mapped_estimator in enumerate(mapped_model.mapped_estimators):
+        estimator_diagnoses, estimator_faulty_features_nodes = estimators_diagnoses[estimator_index], estimators_faulty_features_nodes[estimator_index]
+        match (bool(estimator_diagnoses), bool(estimator_faulty_features_nodes)): 
+            case (True, True) | (False, True):
+                # there are faulty nodes - will be fixed based of the diagnoses
+                summed_wasted_effort += _get_wasted_effort(
+                    mapped_estimator,
+                    estimator_diagnoses,
+                    estimator_faulty_features_nodes
+                )
+            case (False, False):
+                # no faulty nodes and none were fixed - no waste
+                summed_wasted_effort += 0
+            case (True, False):
+                # no faulty nodes - all nodes are healthy and will be fixed
+                if tester_constants.NORMALIZE_WASTED_EFFORT:
+                    summed_wasted_effort += 100
+                else:
+                    summed_wasted_effort += len(mapped_estimator)
+    
+    # average the wasted effort per estimator
+    return summed_wasted_effort / len(mapped_model.mapped_estimators)
