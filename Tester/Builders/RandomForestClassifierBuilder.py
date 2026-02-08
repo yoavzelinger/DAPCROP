@@ -14,6 +14,9 @@ class StoredSampleWeightsRandomForestClassifier(RandomForestClassifier):
             self.sample_weight = sample_weight
             return super()._fit(X, y, sample_weight, check_input, missing_values_in_feature_mask)
         
+        def fit(self, X, y, sample_weight=None, check_input=True):
+            return self._fit(X, y, sample_weight, check_input)
+        
     def __init__(
         self,
         n_estimators=100,
