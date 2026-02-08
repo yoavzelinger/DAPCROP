@@ -1,3 +1,4 @@
+import warnings
 from copy import deepcopy
 from collections import defaultdict
 from sklearn.metrics import accuracy_score
@@ -7,8 +8,10 @@ from DOSPINER import *
 import Tester.TesterConstants as tester_constants
 
 def get_accuracy(model, X, y):
-    y_predicted = model.predict(X)
-    return accuracy_score(y, y_predicted)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="X does not have valid feature names")
+        y_predicted = model.predict(X)
+        return accuracy_score(y, y_predicted)
 
 def get_top_k(mapped_model: ATreeBasedMappedModel,
               diagnoses: list[list[int]],
