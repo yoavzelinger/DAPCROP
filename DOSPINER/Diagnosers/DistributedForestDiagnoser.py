@@ -72,7 +72,7 @@ class DistributedForestDiagnoser(ADiagnoser):
         
         Parameters:
             base_diagnoser_class (type[ADiagnoser]): The base diagnoser class to use for each tree.
-            mapped_model (MappedRandomForest): The mapped random forest model.
+            mapped_model (MappedForest): The mapped random forest model.
             X (pd.DataFrame): The input data.
             y (pd.Series): The target data.
             max_workers (Optional[int]): Maximum number of worker threads for parallel execution.

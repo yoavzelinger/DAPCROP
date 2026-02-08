@@ -5,7 +5,7 @@ from concurrent.futures import ProcessPoolExecutor
 from typing import Optional, Callable
 import os
 
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 import DOSPINER.Constants as constants
@@ -47,7 +47,7 @@ class ForestFixerWrapper(AFixer):
                  faulty_nodes_indices: list[int],
                  X_prior: pd.DataFrame = None,
                  y_prior: pd.Series = None,
-                 sklearn_model: RandomForestClassifier = None,
+                 sklearn_model: RandomForestClassifier | AdaBoostClassifier = None,
                  **kwargs: dict
     ):
         super().__init__(mapped_model, X, y, faulty_nodes_indices, X_prior, y_prior, sklearn_model)
@@ -87,9 +87,9 @@ class ForestFixerWrapper(AFixer):
         Fix the model using parallel processing.
 
         Returns:
-            RandomForestClassifier: The fixed random forest.
+            RandomForestClassifier | AdaBoostClassifier: The fixed ensemble model.
         """
-        self.fixed_model: RandomForestClassifier = deepcopy(self.sklearn_model)
+        self.fixed_model: RandomForestClassifier | AdaBoostClassifier = deepcopy(self.sklearn_model)
         
         fixing_tasks = [(estimator_index, (estimator_index, mapped_estimator, self.base_fixer_creator))
                         for estimator_index, mapped_estimator in enumerate(self.original_mapped_model.mapped_estimators)
