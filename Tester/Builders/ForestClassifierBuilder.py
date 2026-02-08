@@ -150,11 +150,9 @@ def build_forest(
     model.fit(X_train, y_train)
     model.best_accuracy = accuracy_score(y_validation, model.predict(X_validation))
     
-    for estimator in model.estimators_:
-        estimator.feature_names_in_ = model.feature_names_in_
-
     estimator: model_wrapper_class.StoredSampleWeightsDecisionTreeClassifier
     for estimator in model.estimators_:
+        estimator.feature_names_in_ = model.feature_names_in_
         if tester_constants.constants.SYNTHESIZE_BY_BOOTSTRAP:
             estimator.sample_weight = pd.concat([
                 pd.Series(estimator.sample_weight, index=X_train.index),
