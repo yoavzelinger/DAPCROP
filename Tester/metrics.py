@@ -34,7 +34,7 @@ def get_top_k(mapped_model: ATreeBasedMappedModel,
     
     def get_current_correctly_identified_ratio(diagnosis: list[int]) -> float:
         diagnosis_divided_to_trees: list[list[int]] = [diagnosis]
-        if isinstance(mapped_model, MappedRandomForest):
+        if isinstance(mapped_model, MappedForest):
             group_by_tree_map = defaultdict(list)
             for node_index in diagnosis:
                 estimator_index, _ = mapped_model.component_estimator_map[node_index]

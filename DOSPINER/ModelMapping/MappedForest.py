@@ -3,28 +3,28 @@ from copy import deepcopy
 import pandas as pd
 from scipy.sparse import csr_matrix, hstack
 
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 
 from .ATreeBasedMappedModel import ATreeBasedMappedModel
 from .TreeNodeComponent import TreeNodeComponent
 from .MappedDecisionTree import MappedDecisionTree
 
-class MappedRandomForest(ATreeBasedMappedModel):
+class MappedForest(ATreeBasedMappedModel):
     mapped_estimators: list[MappedDecisionTree]
     component_estimator_map: dict[int, tuple[int, int]] # component index to (estimator index, sklearn index in estimator)
     inverse_component_estimator_map: dict[tuple[int, int], int] # (estimator index, sklearn index in estimator) to component index
 
     def __init__(self, 
-                 model: RandomForestClassifier,
+                 model: RandomForestClassifier | AdaBoostClassifier,
                  feature_types: dict[str, str],
                  X: pd.DataFrame = None,
                  y: pd.Series = None
     ):
         """
-        Initialize the MappedRandomForest.
+        Initialize the MappedForest.
         
         Parameters:
-            model (RandomForestClassifier): The sklearn random forest model.
+            model (RandomForestClassifier | AdaBoostClassifier): The sklearn ensemble model.
             X (DataFrame): The data.
             y (Series): The target column.
         """

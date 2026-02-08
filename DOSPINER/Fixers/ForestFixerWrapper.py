@@ -10,7 +10,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 import DOSPINER.Constants as constants
 from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
-from DOSPINER.ModelMapping.MappedRandomForest import MappedRandomForest
+from DOSPINER.ModelMapping.MappedForest import MappedForest
 
 from DOSPINER.Diagnosers import *
 
@@ -37,11 +37,11 @@ def _fix_estimator_worker(estimator_index: int,
 class ForestFixerWrapper(AFixer):
     alias = "forest_fixer_wrapper"
 
-    original_mapped_model: MappedRandomForest
+    original_mapped_model: MappedForest
 
     def __init__(self,
                  base_fixer_class: type[ATreeFixer],
-                 mapped_model: MappedRandomForest,
+                 mapped_model: MappedForest,
                  X: pd.DataFrame,
                  y: pd.Series,
                  faulty_nodes_indices: list[int],

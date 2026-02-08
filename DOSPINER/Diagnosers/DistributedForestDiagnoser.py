@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score
 
 from DOSPINER import Constants as constants
 
-from DOSPINER.ModelMapping.MappedRandomForest import MappedRandomForest
+from DOSPINER.ModelMapping.MappedForest import MappedForest
 from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
 from .ADiagnoser import *
@@ -58,11 +58,11 @@ class DistributedForestDiagnoser(ADiagnoser):
     simultaneously, with each worker handling exceptions internally and returning
     global indices directly.
     """
-    mapped_model: MappedRandomForest
+    mapped_model: MappedForest
 
     def __init__(self,
                  base_diagnoser_class: type[ADiagnoser],
-                 mapped_model: MappedRandomForest,
+                 mapped_model: MappedForest,
                  X: pd.DataFrame,
                  y: pd.Series,
                  **kwargs: object

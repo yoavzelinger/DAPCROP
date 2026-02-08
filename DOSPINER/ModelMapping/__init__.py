@@ -1,4 +1,4 @@
 from .ATreeBasedMappedModel import ATreeBasedMappedModel
 from .TreeNodeComponent import TreeNodeComponent
 from .MappedDecisionTree import MappedDecisionTree
-from .MappedRandomForest import MappedRandomForest
+from .MappedForest import MappedForest

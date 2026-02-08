@@ -41,7 +41,7 @@ def get_mapped_model(sklearn_model, feature_types, X_train, y_train):
         case tester_constants.constants.DriftingModelType.Tree:
             return MappedDecisionTree(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
         case tester_constants.constants.DriftingModelType.Forest:
-            return MappedRandomForest(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
+            return MappedForest(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
         case _:
             raise ValueError(f"Unsupported drifting model: {tester_constants.constants.DRIFTING_MODEL_TYPE}")
 
