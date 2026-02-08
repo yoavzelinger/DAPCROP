@@ -28,22 +28,22 @@ def get_sklearn_model(X_train,
                       y_train,
                       previous_model = None
  ) -> ClassifierMixin:
-    match tester_constants.constants.DRIFTING_MODEL:
-        case tester_constants.constants.DriftingModel.DecisionTree:
+    match tester_constants.constants.DRIFTING_MODEL_TYPE:
+        case tester_constants.constants.DriftingModelType.Tree:
             return build_tree(X_train, y_train, model=deepcopy(previous_model))
-        case tester_constants.constants.DriftingModel.RandomForest:
+        case tester_constants.constants.DriftingModelType.Forest:
             return build_forest(X_train, y_train, model=deepcopy(previous_model))
         case _:
-            raise ValueError(f"Unsupported drifting model: {tester_constants.constants.DRIFTING_MODEL}")
+            raise ValueError(f"Unsupported drifting model: {tester_constants.constants.DRIFTING_MODEL_TYPE}")
 
 def get_mapped_model(sklearn_model, feature_types, X_train, y_train):
-    match tester_constants.constants.DRIFTING_MODEL:
-        case tester_constants.constants.DriftingModel.DecisionTree:
+    match tester_constants.constants.DRIFTING_MODEL_TYPE:
+        case tester_constants.constants.DriftingModelType.Tree:
             return MappedDecisionTree(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
-        case tester_constants.constants.DriftingModel.RandomForest:
+        case tester_constants.constants.DriftingModelType.Forest:
             return MappedRandomForest(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
         case _:
-            raise ValueError(f"Unsupported drifting model: {tester_constants.constants.DRIFTING_MODEL}")
+            raise ValueError(f"Unsupported drifting model: {tester_constants.constants.DRIFTING_MODEL_TYPE}")
 
 def drift_tree(mapped_model: ATreeBasedMappedModel,
                dataset: Dataset,

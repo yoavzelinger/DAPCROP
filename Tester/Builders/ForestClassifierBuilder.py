@@ -1,7 +1,8 @@
+import inspect
 import pandas as pd
 import numpy as np
 
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import accuracy_score
@@ -63,23 +64,44 @@ class StoredSampleWeightsRandomForestClassifier(RandomForestClassifier):
         )
         self.estimator = StoredSampleWeightsRandomForestClassifier.StoredSampleWeightsDecisionTreeClassifier()
 
+class StoredSampleWeightsAdaBoostClassifier(AdaBoostClassifier):
+    class StoredSampleWeightsDecisionTreeClassifier(DecisionTreeClassifier):
+        def _fit(self, X, y, sample_weight=None, check_input=True, missing_values_in_feature_mask=None):
+            self.sample_weight = sample_weight
+            return super()._fit(X, y, sample_weight, check_input, missing_values_in_feature_mask)
+        
+        def fit(self, X, y, sample_weight=None, check_input=True):
+            return self._fit(X, y, sample_weight, check_input)
+        
+    def __init__(
+        self,
+        n_estimators=100,
+        *,
+        random_state=None
+    ):
+        super().__init__(
+            n_estimators=n_estimators,
+            random_state=random_state
+        )
+        self.estimator = StoredSampleWeightsAdaBoostClassifier.StoredSampleWeightsDecisionTreeClassifier()
+
 def build_forest(
         X_train: pd.DataFrame,
         y_train: pd.Series,
-        model: RandomForestClassifier = None
-        ) -> RandomForestClassifier:
+        model: RandomForestClassifier | AdaBoostClassifier= None
+        ) -> RandomForestClassifier | AdaBoostClassifier:
     """
     Build a random forest classifier based on the given data and features.
 
     Parameters:
         X_train (DataFrame): The training features set.
         y_train (Series): The training labels.
-        model (RandomForestClassifier, optional): An initialized model to train on (with previous best-chosen hyperparameters).
+        model (RandomForestClassifier | AdaBoostClassifier, optional): An initialized model to train on (with previous best-chosen hyperparameters).
 
         If validation data not provided then it is taken from as 0.2 from the training data.
 
     Returns:
-        RandomForestClassifier: The random forest classifier.
+        RandomForestClassifier | AdaBoostClassifier: The forest classifier.
     """
     np.random.seed(tester_constants.constants.RANDOM_STATE)
     
@@ -101,14 +123,28 @@ def build_forest(
             modified_y_train = pd.concat([modified_y_train, pd.Series([class_name])], ignore_index=True)
     cross_validation_split_count = min(tester_constants.CROSS_VALIDATION_SPLIT_COUNT , modified_y_train.value_counts().min())
 
-    random_forest_classifier = RandomForestClassifier(random_state=tester_constants.constants.RANDOM_STATE)
+    model_class: type[RandomForestClassifier | AdaBoostClassifier]
+    model_wrapper_class: type[StoredSampleWeightsRandomForestClassifier | StoredSampleWeightsAdaBoostClassifier]
+
+    match tester_constants.constants.DRIFTING_MODEL:
+        case tester_constants.constants.DRIFTING_MODEL.RandomForest:
+            model_class = RandomForestClassifier
+            model_wrapper_class = StoredSampleWeightsRandomForestClassifier
+        case tester_constants.constants.DRIFTING_MODEL.AdaBoost:
+            model_class = AdaBoostClassifier
+            model_wrapper_class = StoredSampleWeightsAdaBoostClassifier
+        case _:
+            raise ValueError(f"Unsupported drifting model: {tester_constants.constants.DRIFTING_MODEL}")
+    
+    forest_classifier = model_class(random_state=tester_constants.constants.RANDOM_STATE)
     # Find best parameters using grid search cross validation (on training data)
-    grid_search_classifier = GridSearchCV(estimator=random_forest_classifier, 
-                                     param_grid=tester_constants.FOREST_PARAM_GRID, 
+    grid_search_classifier = GridSearchCV(estimator=forest_classifier, 
+                                     param_grid={param_name: param_values for param_name, param_values in tester_constants.FOREST_PARAM_GRID.items() \
+                                                 if param_name in inspect.signature(model_class).parameters}, 
                                      cv=cross_validation_split_count)
     grid_search_classifier.fit(modified_X_train, modified_y_train)
     
-    model = StoredSampleWeightsRandomForestClassifier(**grid_search_classifier.best_params_, 
+    model = model_class(**grid_search_classifier.best_params_, 
                                    random_state=tester_constants.constants.RANDOM_STATE,
                                    )
     model.fit(X_train, y_train)
@@ -117,12 +153,13 @@ def build_forest(
     for estimator in model.estimators_:
         estimator.feature_names_in_ = model.feature_names_in_
 
-    estimator: StoredSampleWeightsRandomForestClassifier.StoredSampleWeightsDecisionTreeClassifier
+    estimator: model_wrapper_class.StoredSampleWeightsDecisionTreeClassifier
     for estimator in model.estimators_:
-        estimator.sample_weight = pd.concat([
-            pd.Series(estimator.sample_weight, index=X_train.index),
-            pd.Series(0, index=X_validation.index)
-        ]).sort_index().values
+        if tester_constants.constants.SYNTHESIZE_BY_BOOTSTRAP:
+            estimator.sample_weight = pd.concat([
+                pd.Series(estimator.sample_weight, index=X_train.index),
+                pd.Series(0, index=X_validation.index)
+            ]).sort_index().values
         estimator.best_accuracy = accuracy_score(y_validation, estimator.predict(X_validation))
 
     return model

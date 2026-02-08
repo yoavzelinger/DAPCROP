@@ -51,10 +51,10 @@ def get_fixer(fixer_name: str
     assert fixer_name in FIXER_CLASSES_DICT, f"Fixer {fixer_name} is not supported"
         
     FixerClass = FIXER_CLASSES_DICT[fixer_name]
-    match constants.DRIFTING_MODEL:
-        case constants.DriftingModel.DecisionTree:
+    match constants.DRIFTING_MODEL_TYPE:
+        case constants.DriftingModelType.Tree:
             return FixerClass
-        case constants.DriftingModel.RandomForest:
+        case constants.DriftingModelType.Forest:
             return lambda *args, **kwargs: ForestFixerWrapper(
                 FixerClass,
                 *args, **kwargs
