@@ -185,7 +185,7 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
     
     mapped_model = get_mapped_model(sklearn_model, dataset.feature_types, X_before, y_before)
     
-    pre_drift_repair_accuracy = get_accuracy(sklearn_model, *dataset.get_repair_data())
+    pre_drift_after_accuracy = get_accuracy(mapped_model.model, *dataset.get_after_concept_data())
     
     for (X_repair_total, y_repair_total), (X_repair, y_repair), (X_test, y_test), (drift_severity_level, drift_description), drifted_features, drifted_features_types, drift_size in drift_tree(mapped_model, dataset, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size):
         try:
@@ -195,7 +195,8 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
             post_drift_test_accuracy = get_accuracy(mapped_model.model, X_test, y_test)
             post_drift_test_accuracy_drop = pre_drift_accuracy - post_drift_test_accuracy
             
-            if pre_drift_repair_accuracy - get_accuracy(sklearn_model, X_repair_total, y_repair_total) < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP or post_drift_test_accuracy_drop < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP:   # insignificant drift
+            post_drift_after_accuracy = get_accuracy(mapped_model.model, pd.concat([X_repair_total, X_test]), pd.concat([y_repair_total, y_test]))
+            if pre_drift_after_accuracy - post_drift_after_accuracy < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP:   # insignificant drift
                 continue
 
             X_before_repair, y_before_repair = pd.concat([X_before, X_repair]).reset_index(drop=True), pd.concat([y_before, y_repair]).reset_index(drop=True)
@@ -308,7 +309,8 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
             post_drift_test_accuracy = get_accuracy(mapped_model.model, X_test, y_test)
             post_drift_test_accuracy_drop = pre_drift_accuracy - post_drift_test_accuracy
             
-            if pre_drift_accuracy - get_accuracy(mapped_model.model, X_repair_total, y_repair_total) < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP or post_drift_test_accuracy_drop < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP:    # insignificant drift
+            post_drift_after_accuracy = get_accuracy(mapped_model.model, pd.concat([X_repair_total, X_test]), pd.concat([y_repair_total, y_test]))
+            if pre_drift_accuracy - post_drift_after_accuracy < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP:    # insignificant drift
                 continue
 
             X_before_repair, y_before_repair = pd.concat([X_before, X_repair]).reset_index(drop=True), pd.concat([y_before, y_repair]).reset_index(drop=True)
