@@ -2,9 +2,17 @@ import pandas as pd
 import numpy as np
 
 from sklearn.tree import DecisionTreeClassifier
-from river.tree import HoeffdingTreeClassifier, HoeffdingAdaptiveTreeClassifier, ExtremelyFastDecisionTreeClassifier
 
-from river.stream import iter_pandas
+try:
+    from river.tree import HoeffdingTreeClassifier, HoeffdingAdaptiveTreeClassifier, ExtremelyFastDecisionTreeClassifier
+    from river.stream import iter_pandas
+except ImportError as e:
+    def raise_error(*args, **kwargs):
+        raise ImportError("River library is not installed. Please install it to use RiverDecisionTreeWrapper.") from e
+    HoeffdingTreeClassifier = raise_error
+    HoeffdingAdaptiveTreeClassifier = raise_error
+    ExtremelyFastDecisionTreeClassifier = raise_error
+    iter_pandas = raise_error
 
 import DOSPINER.Constants as constants
 
