@@ -4,6 +4,7 @@ import inspect
 
 from .AFixer import AFixer
 from .ForestFixerWrapper import ForestFixerWrapper
+from .DependentForestFixerWrapper import DependentForestFixerWrapper
 
 from DOSPINER import Constants as constants
 
@@ -55,7 +56,13 @@ def get_fixer(fixer_name: str
         case constants.DriftingModelType.Tree:
             return FixerClass
         case constants.DriftingModelType.Forest:
-            return lambda *args, **kwargs: ForestFixerWrapper(
+            FixerWrapperClass: type[ForestFixerWrapper]
+            match constants.DRIFTING_MODEL:
+                case constants.DriftingModel.RandomForest:
+                    FixerWrapperClass = ForestFixerWrapper
+                case constants.DriftingModel.AdaBoost:
+                    FixerWrapperClass = DependentForestFixerWrapper
+            return lambda *args, **kwargs: FixerWrapperClass(
                 FixerClass,
                 *args, **kwargs
                 )
