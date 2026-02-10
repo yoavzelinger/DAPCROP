@@ -1,4 +1,6 @@
 from typing import Callable
+from collections import Counter
+from functools import reduce
 
 import pandas as pd
 
@@ -288,6 +290,12 @@ class TreeNodeComponent:
             y = pd.concat([y, synthesized_y], ignore_index=True)
         
         return X, y
+    
+    def get_node_class_count(self) -> dict[int, int]:
+        return reduce(lambda x, y: x + Counter(y.data_synthesizer.class_counts), 
+                      self.get_all_leaves(), 
+                      Counter()
+                      )
     
     def __eq__(self, other) -> bool:
         if isinstance(other, TreeNodeComponent):

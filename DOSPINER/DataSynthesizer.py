@@ -10,8 +10,8 @@ class DataSynthesizer:
                  data_feature_types: dict):
         self.count = len(X)
 
-        class_counts = y.value_counts().to_dict()
-        self.class_distribution = {class_name: class_count / self.count for class_name, class_count in class_counts.items()}
+        self.class_counts = y.value_counts().to_dict()
+        self.class_distribution = {class_name: class_count / self.count for class_name, class_count in self.class_counts.items()}
 
         self.features_distribution = {}
         for feature in X.columns:
