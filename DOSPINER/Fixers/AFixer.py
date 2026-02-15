@@ -40,7 +40,7 @@ class AFixer(ABC):
         self.feature_types = mapped_model.data_feature_types
         self.X = X
         self.y = y
-        self.faulty_nodes_indices = faulty_nodes_indices
+        self.faulty_nodes_indices = sorted(faulty_nodes_indices, key=lambda idx: mapped_model[idx].depth)
         self.fixed_model: ClassifierMixin = None
 
         self.X_prior = X_prior
