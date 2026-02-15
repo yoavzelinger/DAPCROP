@@ -157,13 +157,15 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
     
     def fit(self,
             X: pd.DataFrame,
-            y: pd.Series) -> 'SubTreeReplaceableDecisionTree':
+            y: pd.Series,
+            sample_weight: pd.Series = None) -> 'SubTreeReplaceableDecisionTree':
         """
         Fit the decision tree to the data.
 
         Parameters:
             X (pd.DataFrame): The input features.
             y (pd.Series): The target labels.
+            sample_weight (pd.Series, optional): Per-sample weights aligned with X.
             
         Returns:
             SubTreeReplaceableDecisionTree: Returns self for method chaining.
@@ -171,8 +173,10 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
         self.resolve_candidates_conflicts()
         
         for node_to_replace in self.replacement_candidates:
+            X_reached, y_reached = node_to_replace.get_data_reached_node(X, y, allow_empty=False)
+            w_reached = sample_weight.loc[X_reached.index] if sample_weight is not None else None
             self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-            self.replaced_subtrees[node_to_replace].fit(*node_to_replace.get_data_reached_node(X, y, allow_empty=False))
+            self.replaced_subtrees[node_to_replace].fit(X_reached, y_reached, sample_weight=w_reached)
 
         self.feature_names_in_ = np.array(X.columns, dtype=object)
         self.classes_ = np.unique(list(self.replacement_candidates[0].get_node_class_count().keys()))

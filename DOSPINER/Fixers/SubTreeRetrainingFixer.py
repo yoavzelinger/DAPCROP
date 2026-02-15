@@ -48,6 +48,6 @@ class SubTreeRetrainingFixer(ATreeFixer):
                                                          X_prior=self.X_prior,
                                                          y_prior=self.y_prior)
         
-        self.fixed_model.fit(self.X, self.y)
+        self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
         
         return super().fix_model()

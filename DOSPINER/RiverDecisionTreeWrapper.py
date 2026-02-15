@@ -43,13 +43,14 @@ class RiverDecisionTreeWrapper(DecisionTreeClassifier):
 
         self.X_prior, self.y_prior = X_prior, y_prior
 
-    def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def fit(self, X: pd.DataFrame, y: pd.Series, sample_weight: pd.Series = None) -> None:
         """
         Fit the ExtremelyFastDecisionTreeClassifier model.
 
         Args:
             X (pd.DataFrame): The input features.
             y (pd.Series): The target labels.
+            sample_weight (pd.Series, optional): Per-sample weights aligned with X.
 
         Returns:
             ExtremelyFastDecisionTreeWrapper: The fitted model.
@@ -74,9 +75,12 @@ class RiverDecisionTreeWrapper(DecisionTreeClassifier):
             case constants.SubTreeType.HoeffdingAdaptiveTreeClassifier:
                 self.model.drift_window_threshold = 10
 
-
-        for x_i, y_i in iter_pandas(X, y):
-            self.model.learn_one(x_i, y_i, w=current_weight)
+        if sample_weight is not None:
+            for (x_i, y_i), w_i in zip(iter_pandas(X, y), sample_weight):
+                self.model.learn_one(x_i, y_i, w=current_weight * w_i)
+        else:
+            for x_i, y_i in iter_pandas(X, y):
+                self.model.learn_one(x_i, y_i, w=current_weight)
     
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """
