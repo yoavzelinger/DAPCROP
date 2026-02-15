@@ -40,7 +40,7 @@ class AFixer(ABC):
         self.feature_types = mapped_model.data_feature_types
         self.X = X
         self.y = y
-        self.faulty_nodes_indices = sorted(faulty_nodes_indices, key=lambda idx: mapped_model[idx].depth)
+        self.faulty_nodes_indices = faulty_nodes_indices
         self.fixed_model: ClassifierMixin = None
 
         self.X_prior = X_prior
@@ -91,3 +91,4 @@ class ATreeFixer(AFixer):
                  sample_weight: pd.Series = None
     ):
         super().__init__(mapped_model, X, y, faulty_nodes_indices, X_prior, y_prior, sklearn_model, sample_weight=sample_weight)
+        self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
