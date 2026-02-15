@@ -12,7 +12,8 @@ class AIndependentFixer(ATreeFixer):
     def _fix_terminal_faulty_node(self,
                                  faulty_node_index: int,
                                  X_reached_faulty_node: pd.DataFrame,
-                                 y_reached_faulty_node: pd.Series
+                                 y_reached_faulty_node: pd.Series,
+                                 sample_weight: pd.Series = None
      ) -> None:
         """
         Fix a terminal faulty node.
@@ -22,12 +23,16 @@ class AIndependentFixer(ATreeFixer):
         Parameters:
             faulty_node_index (int): The index of the faulty node.
             X_reached_faulty_node (DataFrame): The data that reached the faulty node.
+            sample_weight (Series, optional): Per-sample weights aligned with the reached data.
         """
         values = self.sklearn_model.tree_.value[faulty_node_index]
 
         if len(y_reached_faulty_node):
             # Get the most common class in the data that reached the faulty node
-            most_common_class_index = y_reached_faulty_node.value_counts().idxmax()
+            if sample_weight is not None:
+                most_common_class_index = sample_weight.groupby(y_reached_faulty_node).sum().idxmax()
+            else:
+                most_common_class_index = y_reached_faulty_node.value_counts().idxmax()
 
             # Make the most common class the class with the max count in the node
             max_value_count = np.max(values)
@@ -47,7 +52,8 @@ class AIndependentFixer(ATreeFixer):
 
     def _fix_numeric_faulty_node(self, 
                                   faulty_node_index: int,
-                                  X_reached_faulty_node: pd.DataFrame
+                                  X_reached_faulty_node: pd.DataFrame,
+                                  sample_weight: pd.Series = None
      ) -> None:
         """
         Fix a numeric faulty node.
@@ -56,12 +62,18 @@ class AIndependentFixer(ATreeFixer):
         Parameters:
             faulty_node_index (int): The index of the faulty node.
             X_reached_faulty_node (DataFrame): The data that reached the faulty node.
+            sample_weight (Series, optional): Per-sample weights aligned with the reached data.
         """
         faulty_node = self.original_mapped_model[faulty_node_index]
         node_feature_average_before_drift = faulty_node.feature_average_value
         if node_feature_average_before_drift is None:
             raise NotImplementedError("The average feature value before the drift is not available")
-        node_feature_average_after_drift = X_reached_faulty_node[faulty_node.feature].mean()
+        if sample_weight is not None:
+            node_feature_average_after_drift = np.average(
+                X_reached_faulty_node[faulty_node.feature], weights=sample_weight.values
+            )
+        else:
+            node_feature_average_after_drift = X_reached_faulty_node[faulty_node.feature].mean()
         node_feature_average_difference = node_feature_average_after_drift - node_feature_average_before_drift
         new_threshold = faulty_node.threshold + node_feature_average_difference
         # print(f"{self.diagnoser_output_name}: Faulty node {faulty_node_index} (Numeric) threshold changed from {faulty_node.threshold:.2f} to {new_threshold:.2f}")
@@ -98,9 +110,15 @@ class AIndependentFixer(ATreeFixer):
             X_reached_faulty_node (DataFrame): The data that reached the faulty node.
         """
         self.fixed_model: DecisionTreeClassifier = deepcopy(self.sklearn_model)
+        
+        # Extract weights for the samples that reached this node
+        sample_weight = None
+        if self.sample_weight is not None:
+            sample_weight = self.sample_weight.loc[X_reached_faulty_node.index]
+        
         faulty_node = self.original_mapped_model[faulty_node_index]
         if faulty_node.is_terminal():
-            self._fix_terminal_faulty_node(faulty_node_index, X_reached_faulty_node, y_reached_faulty_node)
+            self._fix_terminal_faulty_node(faulty_node_index, X_reached_faulty_node, y_reached_faulty_node, sample_weight)
             return
         faulty_node_feature_type: constants.FeatureType = faulty_node.feature_type
         if faulty_node_feature_type is None:
@@ -108,7 +126,7 @@ class AIndependentFixer(ATreeFixer):
             faulty_node_feature_type: constants.FeatureType = self.feature_types[faulty_node.feature]
         match faulty_node_feature_type:
             case constants.FeatureType.Numeric:
-                self._fix_numeric_faulty_node(faulty_node_index, X_reached_faulty_node)
+                self._fix_numeric_faulty_node(faulty_node_index, X_reached_faulty_node, sample_weight)
             case constants.FeatureType.Binary | constants.FeatureType.Categorical:
                 self._fix_categorical_faulty_node(faulty_node_index)
             case _:
