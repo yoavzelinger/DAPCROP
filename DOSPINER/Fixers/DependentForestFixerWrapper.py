@@ -87,7 +87,7 @@ class DependentForestFixerWrapper(ForestFixerWrapper):
         last_faulty_step = pd.Series(np.nan, index=self.X.index)
         
         for step, estimator_index in enumerate(faulty_estimator_indices):
-            mapped_estimator = self.original_mapped_model.mapped_estimators[estimator_index]
+            mapped_estimator = self.mapped_model.mapped_estimators[estimator_index]
             
             # Compute per-sample weights based on distance to last faulty appearance
             weights = pd.Series(1.0, index=self.X.index)

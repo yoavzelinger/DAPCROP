@@ -36,7 +36,7 @@ class AFixer(ABC):
         """
         assert self.alias is not None, "Alias must be set to a fixer class"
 
-        self.original_mapped_model = deepcopy(mapped_model)
+        self.mapped_model = deepcopy(mapped_model)
         self.feature_types = mapped_model.data_feature_types
         self.X = X
         self.y = y
@@ -61,7 +61,7 @@ class AFixer(ABC):
         Returns:
             DataFrame: The data that reached the faulty nodes.
         """
-        faulty_node = self.original_mapped_model[faulty_node_index]
+        faulty_node = self.mapped_model[faulty_node_index]
         return faulty_node.get_data_reached_node(self.X, self.y, allow_empty=False)
     
     @abstractmethod

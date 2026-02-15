@@ -48,6 +48,7 @@ class AIndependentFixer(ATreeFixer):
         
         # print(f"{self.diagnoser_output_name}: Faulty node {faulty_node_index} (Terminal) class changed from {max(old_values[0])} to {max(values[0])}")
         self.fixed_model.tree_.value[faulty_node_index] = values
+        self.mapped_model[faulty_node_index].class_name = self.fixed_model.classes_[values.argmax()]
 
 
     def _fix_numeric_faulty_node(self, 
@@ -64,7 +65,7 @@ class AIndependentFixer(ATreeFixer):
             X_reached_faulty_node (DataFrame): The data that reached the faulty node.
             sample_weight (Series, optional): Per-sample weights aligned with the reached data.
         """
-        faulty_node = self.original_mapped_model[faulty_node_index]
+        faulty_node = self.mapped_model[faulty_node_index]
         node_feature_average_before_drift = faulty_node.feature_average_value
         if node_feature_average_before_drift is None:
             raise NotImplementedError("The average feature value before the drift is not available")
@@ -77,6 +78,7 @@ class AIndependentFixer(ATreeFixer):
         node_feature_average_difference = node_feature_average_after_drift - node_feature_average_before_drift
         new_threshold = faulty_node.threshold + node_feature_average_difference
         # print(f"{self.diagnoser_output_name}: Faulty node {faulty_node_index} (Numeric) threshold changed from {faulty_node.threshold:.2f} to {new_threshold:.2f}")
+        self.mapped_model[faulty_node_index].threshold = new_threshold
         self.fixed_model.tree_.threshold[faulty_node_index] = new_threshold
 
     def _fix_categorical_faulty_node(self,
@@ -90,11 +92,12 @@ class AIndependentFixer(ATreeFixer):
                 faulty_node_index (int): The index of the faulty node.
                 X_reached_faulty_node (DataFrame): The data that reached the faulty node.
           """
-          faulty_node = self.original_mapped_model[faulty_node_index]
+          faulty_node = self.mapped_model[faulty_node_index]
           left_child, right_child = faulty_node.left_child, faulty_node.right_child
           left_child_index, right_child_index = left_child.get_index(), right_child.get_index()
           self.fixed_model.tree_.children_left[faulty_node_index] = right_child_index
           self.fixed_model.tree_.children_right[faulty_node_index] = left_child_index
+          self.mapped_model[faulty_node_index].left_child, self.mapped_model[faulty_node_index].right_child = right_child, left_child
         #   print(f"{self.diagnoser_output_name}: Faulty node {faulty_node_index} (Categorical) condition flipped")
           
     def fix_faulty_node(self,
@@ -116,7 +119,7 @@ class AIndependentFixer(ATreeFixer):
         if self.sample_weight is not None:
             sample_weight = self.sample_weight.loc[X_reached_faulty_node.index]
         
-        faulty_node = self.original_mapped_model[faulty_node_index]
+        faulty_node = self.mapped_model[faulty_node_index]
         if faulty_node.is_terminal():
             self._fix_terminal_faulty_node(faulty_node_index, X_reached_faulty_node, y_reached_faulty_node, sample_weight)
             return

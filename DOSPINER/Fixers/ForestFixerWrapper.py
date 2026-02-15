@@ -37,7 +37,7 @@ def _fix_estimator_worker(estimator_index: int,
 class ForestFixerWrapper(AFixer):
     alias = "forest_fixer_wrapper"
 
-    original_mapped_model: MappedForest
+    mapped_model: MappedForest
 
     def __init__(self,
                  base_fixer_class: type[ATreeFixer],
@@ -64,7 +64,7 @@ class ForestFixerWrapper(AFixer):
         """
         faulty_estimators: dict[int, list[int]] = defaultdict(list)
         for faulty_node_index in self.faulty_nodes_indices:
-            estimator_index, sklearn_node_index = self.original_mapped_model.component_estimator_map[faulty_node_index]
+            estimator_index, sklearn_node_index = self.mapped_model.component_estimator_map[faulty_node_index]
             faulty_estimators[estimator_index].append(sklearn_node_index)
         assert list(faulty_estimators.keys()) == sorted(faulty_estimators.keys())
         return faulty_estimators
@@ -92,7 +92,7 @@ class ForestFixerWrapper(AFixer):
         self.fixed_model: RandomForestClassifier | AdaBoostClassifier = deepcopy(self.sklearn_model)
         
         fixing_tasks = [(estimator_index, (estimator_index, mapped_estimator, self.base_fixer_creator))
-                        for estimator_index, mapped_estimator in enumerate(self.original_mapped_model.mapped_estimators)
+                        for estimator_index, mapped_estimator in enumerate(self.mapped_model.mapped_estimators)
                         if estimator_index in self.faulty_estimators]
         
         fixed_estimators: list[tuple[int, DecisionTreeClassifier]]
