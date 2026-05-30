@@ -54,7 +54,7 @@ class SFLDT(ADiagnoser):
         self.group_feature_nodes = group_feature_nodes
         self.use_shap_contribution = use_shap_contribution
         self.combine_components_depth = combine_components_depth
-        self.is_participation_fuzzy = self.use_shap_contribution or combine_components_depth
+        self.is_participation_fuzzy = self.use_shap_contribution or self.combine_components_depth
         # Tests
         self.aggregate_tests = aggregate_tests
         self.combine_prior_confidence = combine_prior_confidence
@@ -120,10 +120,15 @@ class SFLDT(ADiagnoser):
         for path_index, path_test_indices in enumerate(self.path_tests_indices.values()):
             paths_first_test_indices.append(path_test_indices[0])
             paths_error_vector[path_index] = self.error_vector[path_test_indices].mean()
+            if self.combine_prior_confidence:
+                prior_confidence = self.tests_prior_confidence[path_test_indices[0]]
+                posterior_confidence = 1 - paths_error_vector[path_index]
+                paths_error_vector[path_index] = max(prior_confidence - posterior_confidence, 0)
         
-        self.error_vector = paths_error_vector / paths_error_vector.sum()
+        self.error_vector = paths_error_vector
         
         self.spectra = self.shrink_spectra_based_on_paths(self.spectra, paths_first_test_indices)
+        self.binary_spectra = self.shrink_spectra_based_on_paths(self.binary_spectra, paths_first_test_indices)
 
     def update_error_vector_to_fuzzy(self
     ) -> None:
@@ -172,8 +177,11 @@ class SFLDT(ADiagnoser):
             participations_counts = participations_mask.sum(axis=0)
             features_spectra[feature_index] = np.divide(participations_sums, participations_counts, out=np.zeros_like(participations_sums, dtype=float), where=participations_counts != 0)
         self.spectra = np.nan_to_num(features_spectra)
+        self.binary_spectra = np.zeros((self.components_count, self.tests_count))
+        for feature_index, feature_nodes_spectra_indices in self.feature_index_to_node_indices_dict.items():
+            self.binary_spectra[feature_index] = (self.binary_spectra[feature_nodes_spectra_indices, :].any(axis=0)).astype(float)
 
-    def combine_shap_contributions(self) -> None:
+    def combine_feature_shap_contributions(self) -> None:
         """
         Update the participation matrix to use the shap contributions. For now only relevant for feature components.
         The participations are calculated as the weighted average of the SHAP values of the features. The weights are based on the predicted probabilities of the samples.
@@ -190,13 +198,12 @@ class SFLDT(ADiagnoser):
         fuzzy_spectra = weighted_shap_values.sum(axis=2).T
         assert fuzzy_spectra.shape == self.spectra.shape, f"The new fuzzy spectra's shape {fuzzy_spectra.shape} does not match the original spectra's shape {self.spectra.shape}"
         
-        participations_sum = fuzzy_spectra.sum()
-        if participations_sum in (0, fuzzy_spectra.size):
+        if len(np.unique(fuzzy_spectra)) == 1:
             # Constant value for all spectra - cannot use fuzzy participation
             self.is_participation_fuzzy = False
             return
   
-        fuzzy_spectra /= participations_sum
+        fuzzy_spectra /= fuzzy_spectra.sum()
         fuzzy_spectra[fuzzy_spectra == 0] = constants.EPSILON
 
         # Including the shap contributions only for the paths participations
@@ -209,7 +216,7 @@ class SFLDT(ADiagnoser):
         """
         if self.use_shap_contribution:
             assert self.group_feature_nodes, "Cannot use SHAP contributions without feature components"
-            self.combine_shap_contributions()
+            self.combine_feature_shap_contributions()
 
     def fill_spectra_and_error_vector(self, 
                                       X: pd.DataFrame, 
@@ -227,6 +234,8 @@ class SFLDT(ADiagnoser):
         terminals_count = 0
         node_indicator = self.mapped_model.get_node_indicator(X)
         discrete_error_vector = (self.mapped_model.model.predict(X) != y.values).astype(int)
+        if self.combine_prior_confidence:
+            self.tests_prior_confidence = np.zeros(self.tests_count)
         for test_index in range(self.tests_count):
             participated_component_indices = node_indicator.indices[
                 node_indicator.indptr[test_index] : node_indicator.indptr[test_index + 1]
@@ -238,11 +247,13 @@ class SFLDT(ADiagnoser):
                 if node.is_terminal():
                     terminals_count += not test_index
                     if self.combine_prior_confidence:
-                        self.error_vector[test_index] += node.confidence if discrete_error_vector[test_index] else (1 - node.confidence)
+                        self.tests_prior_confidence[test_index] = node.confidence
+                        if not self.aggregate_tests:
+                            self.error_vector[test_index] += node.confidence if discrete_error_vector[test_index] else (1 - node.confidence)
             test_participation_vector = self.spectra[:, test_index]
             self.path_tests_indices[tuple(test_participation_vector)].append(test_index)
 
-        if self.combine_prior_confidence:
+        if self.combine_prior_confidence and not self.aggregate_tests:
             self.error_vector /= terminals_count
         else:
             self.error_vector = discrete_error_vector
@@ -250,6 +261,8 @@ class SFLDT(ADiagnoser):
         if not np.any(self.error_vector > 0):
             raise SFLDT.UnaffectedModelException("No errors found in the error vector, cannot perform diagnosis.")
         
+        self.binary_spectra = (self.spectra > 0).astype(float)
+
         if self.group_feature_nodes:
             self.update_spectra_to_feature_components()
         if self.is_participation_fuzzy:
@@ -266,6 +279,9 @@ class SFLDT(ADiagnoser):
             assert np.all((0 <= self.error_vector) & (self.error_vector <= 1)), f"Error vector suppose to be fuzzy, while some of the tests results not in the range [0, 1] (Min: {np.min(self.error_vector)}, Max: {np.max(self.error_vector)})."
         else:
             assert np.isin(self.error_vector, [0, 1]).all(), f"The error vector isn't binary while suppose to be (values: {np.unique(self.error_vector)})"
+
+        assert self.binary_spectra.shape == self.spectra.shape, f"Binary spectra shape {self.binary_spectra.shape} does not match spectra shape {self.spectra.shape}"
+        assert np.isin(self.binary_spectra, [0, 1]).all(), f"Binary spectra is not binary (values: {np.unique(self.binary_spectra)})"
         
     def convert_features_diagnosis_to_nodes_diagnosis(self,
                                                       features_diagnosis: list[int]

@@ -147,10 +147,10 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
             "split_criterion": self.base_sklearn_tree_model.criterion.replace("entropy", "info_gain"),
             "grace_period": 50,
             "delta": 0.01,
-            "tau": 0.05
+            "tau": 0.05,
+            "seed": constants.RANDOM_STATE
         }
         if self.subtree_type == constants.SubTreeType.HoeffdingAdaptiveTreeClassifier:
-            tree_kwargs["seed"] = constants.RANDOM_STATE
             tree_kwargs["drift_window_threshold"] = 30
 
         return RiverDecisionTree(X_prior=X_prior, y_prior=y_prior, subtree_type=self.subtree_type, **tree_kwargs)
@@ -179,7 +179,7 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
             self.replaced_subtrees[node_to_replace].fit(X_reached, y_reached, sample_weight=w_reached)
 
         self.feature_names_in_ = np.array(X.columns, dtype=object)
-        self.classes_ = np.unique(list(self.replacement_candidates[0].get_node_class_count().keys()))
+        self.classes_ = self.base_sklearn_tree_model.classes_
         self.n_features_in_ = X.shape[1]
         self.n_classes_ = len(self.classes_)
         self.n_outputs_ = 1
@@ -239,6 +239,16 @@ class SubTreeReplaceableDecisionTree(DecisionTreeClassifier):
             # Flatten the probability if it's a 2D array with one row
             if isinstance(proba, np.ndarray) and proba.shape[0] == 1:
                 proba = proba[0]
+            
+            # Map subtree probabilities to the full class set
+            if len(proba) != self.n_classes_:
+                full_proba = np.zeros(self.n_classes_)
+                for current_class_index, current_class in enumerate(prediction_tree.classes_):
+                    global_index = np.where(self.classes_ == current_class)[0]
+                    if len(global_index) > 0:
+                        full_proba[global_index[0]] = proba[current_class_index]
+                proba = full_proba
+            
             probabilities.append(proba)
         
         return np.array(probabilities)

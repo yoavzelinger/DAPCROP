@@ -1,9 +1,9 @@
-from enum import Enum, auto
+from enum import IntEnum, Enum, auto
 
 from sys import float_info
 EPSILON = float_info.epsilon
 
-class FeatureType(Enum):
+class FeatureType(IntEnum):
     Numeric = auto()
     Categorical = auto()
     Binary = auto()
@@ -83,7 +83,7 @@ class SubTreeType(Enum):
     ExtremelyFastDecisionTreeClassifier = auto()
     HoeffdingAdaptiveTreeClassifier = auto()
 
-DEFAULT_SUBTREE_TYPE = SubTreeType.HoeffdingAdaptiveTreeClassifier
+DEFAULT_SUBTREE_TYPE = SubTreeType.Original
 
 # Distributing Computation
 DISTRIBUTE_DIAGNOSES_COMPUTATION = True
@@ -93,4 +93,4 @@ MINIMUM_DRIFT_ACCURACY_DROP = 0.1
 
 SYNTHESIZE_BY_BOOTSTRAP = False
 
-SFLDT_ALLOW_UNAFFECTED_MODELS = True
+SFLDT_ALLOW_UNAFFECTED_MODELS = False

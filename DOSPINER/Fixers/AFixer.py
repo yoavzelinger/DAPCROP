@@ -5,6 +5,8 @@ from copy import deepcopy
 from sklearn.base import ClassifierMixin
 from sklearn.tree import DecisionTreeClassifier
 
+from DOSPINER import Constants as constants
+
 from DOSPINER.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
 from DOSPINER.ModelMapping.TreeNodeComponent import TreeNodeComponent
 from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
@@ -48,6 +50,10 @@ class AFixer(ABC):
         self.sample_weight = sample_weight
         
         self.sklearn_model = sklearn_model if sklearn_model else mapped_model.model
+        if not self.faulty_nodes_indices:
+            assert constants.SFLDT_ALLOW_UNAFFECTED_MODELS, "Expecting diagnosis while not provided"
+            print("Warning: No faulty nodes provided. The model will not be fixed.")
+            self.fixed_model = deepcopy(self.sklearn_model)
         
     def _filter_data_reached_fault(self,
                                   faulty_node_index: int

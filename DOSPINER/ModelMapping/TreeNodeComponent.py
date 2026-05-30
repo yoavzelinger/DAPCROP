@@ -179,6 +179,17 @@ class TreeNodeComponent:
         """
         return self.is_successor_of(other) or self.is_ancestor_of(other)
     
+    def get_subtree_nodes(self) -> list['TreeNodeComponent']:
+        """
+        Get the nodes in the subtree rooted at the node.
+
+        Returns:
+            list[TreeNodeComponent]: The nodes in the subtree rooted at the node.
+        """
+        if self.is_terminal():
+            return [self]
+        return [self] + self.left_child.get_subtree_nodes() + self.right_child.get_subtree_nodes()
+    
     def get_all_leaves(self) -> list['TreeNodeComponent']:
         """
         Get all leaves under the node.
@@ -186,9 +197,18 @@ class TreeNodeComponent:
         Returns:
             list[TreeNodeComponent]: The leaves under the node.
         """
-        if self.is_terminal():
-            return [self]
-        return self.left_child.get_all_leaves() + self.right_child.get_all_leaves()
+        subtree_nodes: list['TreeNodeComponent'] = self.get_subtree_nodes()
+        return list(filter(lambda node: node.is_terminal(), subtree_nodes))
+    
+    def get_all_internals(self) -> list['TreeNodeComponent']:
+        """
+        Get all internal (non-leaf) nodes under the node.
+
+        Returns:
+            list[TreeNodeComponent]: The internal nodes under the node.
+        """
+        subtree_nodes: list['TreeNodeComponent'] = self.get_subtree_nodes()
+        return list(filter(lambda node: node.is_internal(), subtree_nodes))
     
     def current_condition(self, X: pd.DataFrame) -> pd.Series:
         column: pd.Series = X[self.parent.feature]
@@ -243,6 +263,7 @@ class TreeNodeComponent:
                 if allow_empty:
                     X, y = next_X, next_y
                 break
+            X, y = next_X, next_y
         return X if y is None else (X, y)
     
     def update_node_data_attributes(self, 
