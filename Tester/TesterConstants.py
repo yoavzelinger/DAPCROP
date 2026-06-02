@@ -101,6 +101,23 @@ MAX_DRIFT_SIZE = 4 # max amount of features to drift, -1 means all features
 
 REPAIR_WINDOW_TEST_SIZES = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
+# V3 MOA Synthetic Drift Constants
+V3_N_SAMPLES = 5000
+
+MOA_SEA_GENERATOR_NAME, MOA_SEA_VARIANTS = "SEA", list(range(4))
+MOA_AGRAWAL_GENERATOR_NAME, MOA_AGRAWAL_FUNCTIONS = "Agrawal", list(range(10))
+
+MOA_GENERATORS = [MOA_SEA_GENERATOR_NAME, MOA_AGRAWAL_GENERATOR_NAME]
+
+MOA_SEA_FEATURE_TYPES = {0: constants.FeatureType.Numeric, 1: constants.FeatureType.Numeric, 2: constants.FeatureType.Numeric}
+MOA_AGRAWAL_FEATURE_TYPES = {
+    "salary": constants.FeatureType.Numeric, "commission": constants.FeatureType.Numeric,
+    "age": constants.FeatureType.Numeric, "hvalue": constants.FeatureType.Numeric,
+    "hyears": constants.FeatureType.Numeric, "loan": constants.FeatureType.Numeric,
+    "elevel": constants.FeatureType.Categorical, "car": constants.FeatureType.Categorical,
+    "zipcode": constants.FeatureType.Categorical
+}
+
 # Testing Columns
 
 #   DEFAULT TESTING DIAGNOSER

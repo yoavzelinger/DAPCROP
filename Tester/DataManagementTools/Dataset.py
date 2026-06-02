@@ -9,6 +9,7 @@ from typing import Generator, Callable
 import Tester.TesterConstants as tester_constants
 
 from .DriftSimulation import single_feature_concept_drift_generator, multiple_features_concept_drift_generator
+from .MOADriftGenerators import MOA_GENERATOR_CONFIGS
 
 class Dataset:
     partitions = ["before", "after", "repair", "test"]
@@ -238,3 +239,37 @@ class Dataset:
             X_test, y_test = self.split_features_targets(after_concept_data.iloc[-self.test_size: ])
 
             yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_description
+
+    @staticmethod
+    def drift_generator_v3(generator_name: str
+    ) -> Generator[tuple[tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], str], None, None]:
+        """
+        Generate synthetic concept drift data using MOA generators for a given generator type.
+
+        Yields for each scenario:
+            (X_before, y_before), (X_repair_full, y_repair_full), (X_test, y_test),
+            description, drifted_features, drifted_features_types, drift_size, feature_types
+        """
+
+        position = int(tester_constants.V3_N_SAMPLES * tester_constants.BEFORE_PROPORTION)
+        repair_size = int(tester_constants.V3_N_SAMPLES * tester_constants.REPAIR_PROPORTION)
+        test_size = int(tester_constants.V3_N_SAMPLES * tester_constants.TEST_PROPORTION)
+
+        scenario_functions, feature_types = MOA_GENERATOR_CONFIGS[generator_name]
+
+        for description, scenario_function in scenario_functions:
+            X, y = scenario_function(position)
+            X, y = pd.DataFrame(X), pd.Series(y, name="target")
+
+            assert set(feature_types.keys()) == set(X.columns), f"Unexpected synthetic features. Expected: {set(feature_types.keys())}, actual: {set(X.columns)}"
+
+            drifted_features = set(X.columns.tolist())
+            drifted_features_types = sorted(feature_types.values())
+            drift_size = len(drifted_features)
+
+            X_before, y_before = X.iloc[:position], y.iloc[:position]
+            X_repair_full, y_repair_full = X.iloc[position:position + repair_size], y.iloc[position:position + repair_size]
+            X_test, y_test = X.iloc[-test_size:], y.iloc[-test_size:]
+
+            yield (X_before, y_before), (X_repair_full, y_repair_full), (X_test, y_test), \
+                    description, drifted_features, drifted_features_types, drift_size, feature_types

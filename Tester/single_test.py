@@ -372,6 +372,105 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
                             f"Scenario: {scenario_description}"
                             )
 
+def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
+    """
+    Run tests for v3 synthetic MOA drift for a single generator type.
+    Iterates over all configs of the given generator, yielding results one by one.
+    Diagnosers are skipped; only fixers are evaluated.
+    """
+    for (X_before, y_before), (X_repair_total, y_repair_total), (X_test, y_test), drift_description, drifted_features, drifted_features_types, drift_size, feature_types in Dataset.drift_generator_v3(generator_name):
+        try:
+            sklearn_model = get_sklearn_model(X_before, y_before)
+            pre_drift_accuracy = sklearn_model.best_accuracy
+
+            if pre_drift_accuracy < tester_constants.MINIMUM_ORIGINAL_ACCURACY:
+                continue
+
+            post_drift_test_accuracy = get_accuracy(sklearn_model, X_test, y_test)
+            post_drift_test_accuracy_drop = pre_drift_accuracy - post_drift_test_accuracy
+
+            if post_drift_test_accuracy_drop < tester_constants.MINIMUM_DRIFT_ACCURACY_DROP:
+                continue
+
+            mapped_model = get_mapped_model(sklearn_model, feature_types, X_before, y_before)
+
+            for repair_window_test_size in repair_window_test_sizes:
+                window_size = max(1, int(len(X_repair_total) * repair_window_test_size))
+                X_repair, y_repair = X_repair_total.iloc[:window_size], y_repair_total.iloc[:window_size]
+
+                if X_repair.empty:
+                    continue
+
+                X_before_repair = pd.concat([X_before, X_repair]).reset_index(drop=True)
+                y_before_repair = pd.concat([y_before, y_repair]).reset_index(drop=True)
+
+                # Comparable Baselines
+                new_all_retrained_model = get_sklearn_model(X_before_repair, y_before_repair)
+                new_all_retrained_accuracy = get_accuracy(new_all_retrained_model, X_test, y_test)
+                new_all_retrained_accuracy_bump = new_all_retrained_accuracy - post_drift_test_accuracy
+
+                new_drift_retrained_model = get_sklearn_model(X_repair, y_repair)
+                new_drift_retrained_accuracy = get_accuracy(new_drift_retrained_model, X_test, y_test)
+                new_drift_retrained_accuracy_bump = new_drift_retrained_accuracy - post_drift_test_accuracy
+
+                current_results_dict = {
+                    tester_constants.DATASET_NAME_COLUMN_NAME: drift_description,
+                    tester_constants.DATASET_SIZE_COLUMN_NAME: tester_constants.V3_N_SAMPLES,
+                    tester_constants.TREE_SIZE_COLUMN_NAME: len(mapped_model),
+                    tester_constants.TREE_FEATURES_COUNT_COLUMN_NAME: len(mapped_model.model_used_features),
+                    tester_constants.REPAIR_WINDOW_PERCENTAGE_COLUMN_NAME: round(repair_window_test_size * tester_constants.REPAIR_PROPORTION * 100, 2),
+                    tester_constants.REPAIR_WINDOW_SIZE_COLUMN_NAME: len(X_repair),
+                    tester_constants.DRIFT_SIZE_COLUMN_NAME: drift_size,
+                    tester_constants.TOTAL_DRIFT_TYPE_COLUMN_NAME: get_total_drift_types(drifted_features_types),
+                    tester_constants.DRIFT_SEVERITY_LEVEL_COLUMN_NAME: 1,
+                    tester_constants.DRIFTED_FEATURES_TYPES_COLUMN_NAME: get_drifted_features_types_string(drifted_features_types),
+                    tester_constants.DRIFT_DESCRIPTION_COLUMN_NAME: drift_description,
+                    tester_constants.ORIGINAL_ACCURACY_COLUMN_NAME: pre_drift_accuracy * 100,
+                    tester_constants.AFTER_ACCURACY_COLUMN_NAME: post_drift_test_accuracy * 100,
+                    tester_constants.AFTER_ACCURACY_DECREASE_COLUMN_NAME: post_drift_test_accuracy_drop * 100,
+                    f"{tester_constants.NEW_DRIFT_RETRAIN_COLUMNS_PREFIX} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}": new_drift_retrained_accuracy * 100,
+                    f"{tester_constants.NEW_DRIFT_RETRAIN_COLUMNS_PREFIX} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": new_drift_retrained_accuracy_bump * 100,
+                    f"{tester_constants.NEW_ALL_RETRAIN_COLUMNS_PREFIX} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}": new_all_retrained_accuracy * 100,
+                    f"{tester_constants.NEW_ALL_RETRAIN_COLUMNS_PREFIX} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": new_all_retrained_accuracy_bump * 100
+                }
+
+                # Skip diagnosers — fill diagnosis columns with empty defaults
+                for diagnoser_output_name in tester_constants.diagnosers_output_names:
+                    current_results_dict[f"{diagnoser_output_name} {tester_constants.DIAGNOSES_NAME_SUFFIX}"] = ""
+                    current_results_dict[f"{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}"] = 0
+                    current_results_dict[f"{diagnoser_output_name} {tester_constants.FAULTY_FEATURES_NAME_SUFFIX}"] = ""
+                    for k in tester_constants.CORRECTLY_IDENTIFIED_K_LIST:
+                        current_results_dict[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=k)}"] = 0
+
+                # Oracle drifted features column
+                current_results_dict[tester_constants.DRIFTED_FEATURES_COLUMN_NAME] = ", ".join(drifted_features)
+
+                # Run fixers with Oracle (all nodes as faulty) and each diagnoser placeholder
+                all_node_indices = list(range(len(mapped_model)))
+
+                for diagnoser_output_name in [Oracle.__name__] + tester_constants.diagnosers_output_names:
+                    for fixer_data in fixers_data:
+                        fixer_class_name = fixer_data["class_name"]
+                        fixer_output_name = fixer_data.get("output_name", fixer_class_name)
+                        fixer_parameters = fixer_data.get("parameters")
+                        fixer_class = get_fixer(fixer_class_name)
+                        fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
+                        fixed_model = fixer.fix_model()
+                        fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
+                        test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy
+                        current_results_dict[f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}"] = fixed_test_accuracy * 100
+                        current_results_dict[f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}"] = test_accuracy_bump * 100
+
+                yield current_results_dict
+        except Exception as e:
+            exception_class = e.__class__.__name__
+            scenario_description = f"{drift_description}, repair window size: {repair_window_test_size}"
+            yield Exception(f"{exception_class} in {scenario_description}:\n "
+                            f"{e}:\n "
+                            f"{''.join(traceback.format_exception(type(e), e, e.__traceback__))}"
+                            f"Scenario: {scenario_description}"
+                            )
+
 def get_example_mapped_model(directory=tester_constants.DATASETS_DIRECTORY_FULL_PATH, file_name=tester_constants.EXAMPLE_FILE_NAME):
     dataset = get_dataset(directory, file_name)
     X_train, y_train = dataset.get_before_concept_data()

@@ -27,7 +27,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--drift_size", type=int, help=f"size of the drift, default is between {tester_constants.MIN_DRIFT_SIZE} and {tester_constants.MAX_DRIFT_SIZE}", default=-1)
     parser.add_argument("-c", "--count", type=int, help="Number of tests to run, default is running all", default=-1)
     parser.add_argument("-t", "--test", type=str, help="Test dataset to run if you want to run a specific test")
-    parser.add_argument("-v", "--version", type=int, help=f"Version of the drift synthesizing to use (1=steric or 2=edge values), default is {tester_constants.DRIFT_SYNTHESIZING_VERSION}", default=0)
+    parser.add_argument("-v", "--version", type=int, help=f"Version of the drift synthesizing to use (1=steric, 2=edge values, 3=MOA synthetic), default is {tester_constants.DRIFT_SYNTHESIZING_VERSION}", default=0)
 
     args = parser.parse_args()
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if args.version:
-        assert args.version in (1, 2), f"Unsupported drift synthesizing version: {args.version}. Supported versions are 1 and 2."
+        assert args.version in (1, 2, 3), f"Unsupported drift synthesizing version: {args.version}. Supported versions are 1, 2, and 3."
         tester_constants.DRIFT_SYNTHESIZING_VERSION = args.version
 
     specific_datasets_string = ""
@@ -85,31 +85,54 @@ if __name__ == "__main__":
 
 
     ###### Run Tests #####
-    single_test_function = run_single_test if tester_constants.DRIFT_SYNTHESIZING_VERSION == 1 else run_single_test_v2
+    if tester_constants.DRIFT_SYNTHESIZING_VERSION == 3:
+        generators = list(tester_constants.MOA_GENERATORS)
 
-    with open(tester_constants.DATASET_DESCRIPTION_FILE_PATH, "r") as descriptions_file:
-        descriptions_reader = DictReader(descriptions_file)
-        for dataset_description in descriptions_reader:
-            if not datasets_count:
-                break
+        # Filter by name if -n flag provided
+        if specific_datasets:
+            generators = [g for g in generators if g.lower() in specific_datasets]
+        elif specific_prefixes:
+            generators = [g for g in generators if any(g.lower().startswith(prefix) for prefix in specific_prefixes)]
 
-            dataset_name = dataset_description["name"]
-            
-            if specific_datasets and dataset_name.lower() not in specific_datasets:
-                continue
-            if specific_prefixes and not dataset_name.lower().startswith(specific_prefixes):
-                continue
-            
-            datasets_count -= 1
+        # Limit count if -c flag provided
+        if datasets_count > 0:
+            generators = generators[:datasets_count]
 
-            print(f"Running tests for {dataset_name}")
-            for test_result in single_test_function(tester_constants.DATASETS_DIRECTORY_FULL_PATH, dataset_name, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size, diagnosers_data=tester_constants.diagnosers_data, fixers_data=tester_constants.fixers_data):
+        for generator_name in generators:
+            print(f"Running tests for generator: {generator_name}")
+            for test_result in run_single_test_v3(generator_name, repair_window_test_sizes=repair_window_test_sizes, fixers_data=tester_constants.fixers_data):
                 if isinstance(test_result, Exception):
                     if not skip_exceptions:
                         raise test_result
-                    errors = errors._append({"name": dataset_name, "error": test_result}, ignore_index=True)
+                    errors = errors._append({"name": generator_name, "error": test_result}, ignore_index=True)
                     continue
                 raw_results = raw_results._append(test_result, ignore_index=True)
+    else:
+        single_test_function = run_single_test if tester_constants.DRIFT_SYNTHESIZING_VERSION == 1 else run_single_test_v2
+
+        with open(tester_constants.DATASET_DESCRIPTION_FILE_PATH, "r") as descriptions_file:
+            descriptions_reader = DictReader(descriptions_file)
+            for dataset_description in descriptions_reader:
+                if not datasets_count:
+                    break
+
+                dataset_name = dataset_description["name"]
+                
+                if specific_datasets and dataset_name.lower() not in specific_datasets:
+                    continue
+                if specific_prefixes and not dataset_name.lower().startswith(specific_prefixes):
+                    continue
+                
+                datasets_count -= 1
+
+                print(f"Running tests for {dataset_name}")
+                for test_result in single_test_function(tester_constants.DATASETS_DIRECTORY_FULL_PATH, dataset_name, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size, diagnosers_data=tester_constants.diagnosers_data, fixers_data=tester_constants.fixers_data):
+                    if isinstance(test_result, Exception):
+                        if not skip_exceptions:
+                            raise test_result
+                        errors = errors._append({"name": dataset_name, "error": test_result}, ignore_index=True)
+                        continue
+                    raw_results = raw_results._append(test_result, ignore_index=True)
 
 
     ##### Prepare Output Files #####
