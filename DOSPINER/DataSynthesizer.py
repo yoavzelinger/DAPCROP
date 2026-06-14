@@ -42,15 +42,19 @@ class DataSynthesizer:
                         np.random.normal(loc=distribution['mean'], scale=distribution['std'], size=self.count)
                     ).clip(lower=distribution['min'], upper=distribution['max'])
                 else:
+                    probs = np.array(list(distribution.values()))
+                    probs /= probs.sum()
                     self.synthesized_X[feature] = pd.Series(
-                        np.random.choice(list(distribution.keys()), size=self.count, p=list(distribution.values()))
+                        np.random.choice(list(distribution.keys()), size=self.count, p=probs)
                     )
 
+            class_probs = np.array(list(self.class_distribution.values()))
+            class_probs /= class_probs.sum()
             self.synthesized_y = pd.Series(
                 np.random.choice(
                     list(self.class_distribution.keys()),
                     size=self.count,
-                    p=list(self.class_distribution.values())
+                    p=class_probs
                 )
             )
 
