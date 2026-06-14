@@ -443,7 +443,7 @@ def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_cons
                         current_results_dict[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=k)}"] = 0
 
                 # Oracle drifted features column
-                current_results_dict[tester_constants.DRIFTED_FEATURES_COLUMN_NAME] = ", ".join(drifted_features)
+                current_results_dict[tester_constants.DRIFTED_FEATURES_COLUMN_NAME] = ", ".join(map(str, drifted_features))
 
                 # Run fixers with Oracle (all nodes as faulty) and each diagnoser placeholder
                 all_node_indices = list(range(len(mapped_model)))
