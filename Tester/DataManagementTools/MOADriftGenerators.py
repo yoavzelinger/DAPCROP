@@ -3,6 +3,7 @@ from itertools import permutations, islice
 from river.datasets.synth import SEA, Agrawal, ConceptDriftStream
 
 import Tester.TesterConstants as tester_constants
+from DOSPINER import Constants as constants
 
 
 def _build_sea_scenarios():
@@ -12,7 +13,7 @@ def _build_sea_scenarios():
         scenario_functions.append((
             f"SEA(variant={before_concept_variant}) -> SEA(variant={after_concept_variant})",
             lambda position, before_variant=before_concept_variant, after_variant=after_concept_variant: zip(*islice(
-                ConceptDriftStream(stream=SEA(variant=before_variant), drift_stream=SEA(variant=after_variant), position=position, width=20),
+                ConceptDriftStream(stream=SEA(variant=before_variant, seed=constants.RANDOM_STATE), drift_stream=SEA(variant=after_variant, seed=constants.RANDOM_STATE), position=position, width=20, seed=constants.RANDOM_STATE),
                 tester_constants.V3_N_SAMPLES))
         ))
     return scenario_functions
@@ -25,7 +26,7 @@ def _build_agrawal_scenarios():
         scenario_functions.append((
             f"Agrawal(function={agrawal_before_function}) -> Agrawal(function={agrawal_after_function})",
             lambda position, before_variant=agrawal_before_function, after_variant=agrawal_after_function: zip(*islice(
-                ConceptDriftStream(stream=Agrawal(classification_function=before_variant), drift_stream=Agrawal(classification_function=after_variant), position=position, width=20),
+                ConceptDriftStream(stream=Agrawal(classification_function=before_variant, seed=constants.RANDOM_STATE), drift_stream=Agrawal(classification_function=after_variant, seed=constants.RANDOM_STATE), position=position, width=20, seed=constants.RANDOM_STATE),
                 tester_constants.V3_N_SAMPLES))
         ))
     return scenario_functions
