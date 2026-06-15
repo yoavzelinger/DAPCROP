@@ -446,7 +446,7 @@ def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_cons
                 current_results_dict[tester_constants.DRIFTED_FEATURES_COLUMN_NAME] = ", ".join(map(str, drifted_features))
 
                 # Run fixers with Oracle (all nodes as faulty) and each diagnoser placeholder
-                all_node_indices = list(range(len(mapped_model)))
+                all_node_indices = list(mapped_model.get_indices())
 
                 for diagnoser_output_name in [Oracle.__name__] + tester_constants.diagnosers_output_names:
                     for fixer_data in fixers_data:
