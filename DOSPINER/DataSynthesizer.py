@@ -35,6 +35,7 @@ class DataSynthesizer:
 
     def synthesize(self) -> tuple[pd.DataFrame, pd.Series]:
         if self.synthesized_X is None or self.synthesized_y is None:
+            np.random.seed(constants.RANDOM_STATE)
             self.synthesized_X = pd.DataFrame()
             for feature, distribution in self.features_distribution.items():
                 if isinstance(distribution, dict) and 'mean' in distribution:
