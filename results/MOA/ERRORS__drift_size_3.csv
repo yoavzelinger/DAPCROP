@@ -1,212 +1,4 @@
 name,error
-SEA,"KeyError in SEA(variant=0) -> SEA(variant=3), repair window size: 0.1:
- 4:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 4
-Scenario: SEA(variant=0) -> SEA(variant=3), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=0) -> Agrawal(function=4), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=0) -> Agrawal(function=4), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=0) -> Agrawal(function=9), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=0) -> Agrawal(function=9), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=1) -> Agrawal(function=3), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=1) -> Agrawal(function=3), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=1) -> Agrawal(function=4), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=1) -> Agrawal(function=4), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=1) -> Agrawal(function=5), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=1) -> Agrawal(function=5), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=1) -> Agrawal(function=6), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=1) -> Agrawal(function=6), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=1) -> Agrawal(function=7), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=1) -> Agrawal(function=7), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=1) -> Agrawal(function=8), repair window size: 0.1:
- 17:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 17
-Scenario: Agrawal(function=1) -> Agrawal(function=8), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=1) -> Agrawal(function=9), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=1) -> Agrawal(function=9), repair window size: 0.1"
 Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=0), repair window size: 0.1:
  probabilities do not sum to 1:
  Traceback (most recent call last):
@@ -224,7 +16,7 @@ Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=0), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -246,7 +38,7 @@ Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=1), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -268,7 +60,7 @@ Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=3), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -290,7 +82,7 @@ Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=4), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -312,7 +104,7 @@ Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=5), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -334,7 +126,7 @@ Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=6), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -356,7 +148,7 @@ Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=7), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -378,7 +170,7 @@ Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=8), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -400,7 +192,7 @@ Agrawal,"ValueError in Agrawal(function=2) -> Agrawal(function=9), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -422,7 +214,7 @@ Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=0), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -444,7 +236,7 @@ Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=1), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -466,7 +258,7 @@ Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=2), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -488,7 +280,7 @@ Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=4), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -510,7 +302,7 @@ Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=5), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -532,7 +324,7 @@ Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=6), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -554,26 +346,32 @@ Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=7), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=3) -> Agrawal(function=7), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=3) -> Agrawal(function=8), repair window size: 0.1:
- 49:
+Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=8), repair window size: 0.1:
+ probabilities do not sum to 1:
  Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 49
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=3) -> Agrawal(function=8), repair window size: 0.1"
 Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=9), repair window size: 0.1:
  probabilities do not sum to 1:
@@ -592,7 +390,7 @@ Agrawal,"ValueError in Agrawal(function=3) -> Agrawal(function=9), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -614,7 +412,7 @@ Agrawal,"ValueError in Agrawal(function=4) -> Agrawal(function=0), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -636,7 +434,7 @@ Agrawal,"ValueError in Agrawal(function=4) -> Agrawal(function=1), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -658,7 +456,7 @@ Agrawal,"ValueError in Agrawal(function=4) -> Agrawal(function=2), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -680,7 +478,7 @@ Agrawal,"ValueError in Agrawal(function=4) -> Agrawal(function=3), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -702,7 +500,7 @@ Agrawal,"ValueError in Agrawal(function=4) -> Agrawal(function=5), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -724,7 +522,7 @@ Agrawal,"ValueError in Agrawal(function=4) -> Agrawal(function=6), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -746,7 +544,7 @@ Agrawal,"ValueError in Agrawal(function=4) -> Agrawal(function=7), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -768,7 +566,7 @@ Agrawal,"ValueError in Agrawal(function=4) -> Agrawal(function=8), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -790,75 +588,11 @@ Agrawal,"ValueError in Agrawal(function=4) -> Agrawal(function=9), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=4) -> Agrawal(function=9), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=5) -> Agrawal(function=1), repair window size: 0.1:
- 47:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 47
-Scenario: Agrawal(function=5) -> Agrawal(function=1), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=5) -> Agrawal(function=4), repair window size: 0.1:
- 36:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 36
-Scenario: Agrawal(function=5) -> Agrawal(function=4), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=5) -> Agrawal(function=6), repair window size: 0.1:
- 45:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 45
-Scenario: Agrawal(function=5) -> Agrawal(function=6), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=5) -> Agrawal(function=9), repair window size: 0.1:
- 49:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 49
-Scenario: Agrawal(function=5) -> Agrawal(function=9), repair window size: 0.1"
 Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=0), repair window size: 0.1:
  probabilities do not sum to 1:
  Traceback (most recent call last):
@@ -876,7 +610,7 @@ Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=0), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -898,7 +632,7 @@ Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=1), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -920,7 +654,7 @@ Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=2), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -942,7 +676,7 @@ Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=3), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -964,7 +698,7 @@ Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=4), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -986,26 +720,32 @@ Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=5), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=6) -> Agrawal(function=5), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=6) -> Agrawal(function=7), repair window size: 0.1:
- 35:
+Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=7), repair window size: 0.1:
+ probabilities do not sum to 1:
  Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 35
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=6) -> Agrawal(function=7), repair window size: 0.1"
 Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=9), repair window size: 0.1:
  probabilities do not sum to 1:
@@ -1024,42 +764,76 @@ Agrawal,"ValueError in Agrawal(function=6) -> Agrawal(function=9), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=6) -> Agrawal(function=9), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=7) -> Agrawal(function=0), repair window size: 0.1:
- 11:
+Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=0), repair window size: 0.1:
+ probabilities do not sum to 1:
  Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 11
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=7) -> Agrawal(function=0), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=7) -> Agrawal(function=2), repair window size: 0.1:
- 11:
+Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=1), repair window size: 0.1:
+ probabilities do not sum to 1:
  Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 11
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
+Scenario: Agrawal(function=7) -> Agrawal(function=1), repair window size: 0.1"
+Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=2), repair window size: 0.1:
+ probabilities do not sum to 1:
+ Traceback (most recent call last):
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=7) -> Agrawal(function=2), repair window size: 0.1"
 Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=3), repair window size: 0.1:
  probabilities do not sum to 1:
@@ -1078,26 +852,32 @@ Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=3), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=7) -> Agrawal(function=3), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=7) -> Agrawal(function=4), repair window size: 0.1:
- 4:
+Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=4), repair window size: 0.1:
+ probabilities do not sum to 1:
  Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 4
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=7) -> Agrawal(function=4), repair window size: 0.1"
 Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=5), repair window size: 0.1:
  probabilities do not sum to 1:
@@ -1116,42 +896,98 @@ Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=5), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=7) -> Agrawal(function=5), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=8) -> Agrawal(function=0), repair window size: 0.1:
- 50:
+Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=6), repair window size: 0.1:
+ probabilities do not sum to 1:
  Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 50
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
+Scenario: Agrawal(function=7) -> Agrawal(function=6), repair window size: 0.1"
+Agrawal,"ValueError in Agrawal(function=7) -> Agrawal(function=8), repair window size: 0.1:
+ probabilities do not sum to 1:
+ Traceback (most recent call last):
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
+Scenario: Agrawal(function=7) -> Agrawal(function=8), repair window size: 0.1"
+Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=0), repair window size: 0.1:
+ probabilities do not sum to 1:
+ Traceback (most recent call last):
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=8) -> Agrawal(function=0), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=8) -> Agrawal(function=1), repair window size: 0.1:
- 35:
+Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=1), repair window size: 0.1:
+ probabilities do not sum to 1:
  Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 35
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=8) -> Agrawal(function=1), repair window size: 0.1"
 Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=2), repair window size: 0.1:
  probabilities do not sum to 1:
@@ -1170,7 +1006,7 @@ Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=2), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -1192,7 +1028,7 @@ Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=3), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -1214,26 +1050,32 @@ Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=4), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=8) -> Agrawal(function=4), repair window size: 0.1"
-Agrawal,"KeyError in Agrawal(function=8) -> Agrawal(function=5), repair window size: 0.1:
- 47:
+Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=5), repair window size: 0.1:
+ probabilities do not sum to 1:
  Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 457, in run_single_test_v3
-    fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in __init__
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/AFixer.py"", line 100, in <lambda>
-    self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
-                                                   ~~~~~~~~~~~~^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/ATreeBasedMappedModel.py"", line 109, in __getitem__
-    return self.components_map[component_index]
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-KeyError: 47
+  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
+    fixed_model = fixer.fix_model()
+                  ^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
+    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
+    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
+    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
+    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
+    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
+  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=8) -> Agrawal(function=5), repair window size: 0.1"
 Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=7), repair window size: 0.1:
  probabilities do not sum to 1:
@@ -1252,7 +1094,7 @@ Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=7), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
@@ -1274,74 +1116,8 @@ Agrawal,"ValueError in Agrawal(function=8) -> Agrawal(function=9), repair window
   File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
     synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
+  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 49, in synthesize
     np.random.choice(list(distribution.keys()), size=self.count, p=probs)
   File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
 ValueError: probabilities do not sum to 1
 Scenario: Agrawal(function=8) -> Agrawal(function=9), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=9) -> Agrawal(function=2), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=9) -> Agrawal(function=2), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=9) -> Agrawal(function=4), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=9) -> Agrawal(function=4), repair window size: 0.1"
-Agrawal,"ValueError in Agrawal(function=9) -> Agrawal(function=5), repair window size: 0.1:
- probabilities do not sum to 1:
- Traceback (most recent call last):
-  File ""/home/yoavzel/DOSPINER/Tester/single_test.py"", line 458, in run_single_test_v3
-    fixed_model = fixer.fix_model()
-                  ^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/Fixers/SubTreeRetrainingFixer.py"", line 51, in fix_model
-    self.fixed_model.fit(self.X, self.y, sample_weight=self.sample_weight)
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 178, in fit
-    self.replaced_subtrees[node_to_replace] = self.create_replaceable_subtree(node_to_replace, self.X_prior, self.y_prior)
-                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/SubTreeReplaceableDecisionTree.py"", line 141, in create_replaceable_subtree
-    X_prior, y_prior = node_to_replace.synthesize_data_reached_node()
-                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/ModelMapping/TreeNodeComponent.py"", line 309, in synthesize_data_reached_node
-    synthesized_X, synthesized_y = leaf.data_synthesizer.synthesize()
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File ""/home/yoavzel/DOSPINER/DOSPINER/DataSynthesizer.py"", line 48, in synthesize
-    np.random.choice(list(distribution.keys()), size=self.count, p=probs)
-  File ""numpy/random/mtrand.pyx"", line 994, in numpy.random.mtrand.RandomState.choice
-ValueError: probabilities do not sum to 1
-Scenario: Agrawal(function=9) -> Agrawal(function=5), repair window size: 0.1"
