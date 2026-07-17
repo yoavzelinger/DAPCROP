@@ -4,6 +4,8 @@
 
 # system files
 *.nfs*
+.DS_Store
+
 
 # cluster files
 *.sh
