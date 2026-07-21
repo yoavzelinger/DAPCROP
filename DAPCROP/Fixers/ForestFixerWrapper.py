@@ -8,11 +8,11 @@ import os
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-import DOSPINER.Constants as constants
-from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
-from DOSPINER.ModelMapping.MappedForest import MappedForest
+import DAPCROP.Constants as constants
+from DAPCROP.ModelMapping.MappedDecisionTree import MappedDecisionTree
+from DAPCROP.ModelMapping.MappedForest import MappedForest
 
-from DOSPINER.Diagnosers import *
+from DAPCROP.Diagnosers import *
 
 from .AFixer import AFixer, ATreeFixer
 

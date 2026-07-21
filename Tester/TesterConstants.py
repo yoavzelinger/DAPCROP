@@ -3,10 +3,10 @@ from os import path as os_path
 from json import load as load_json
 from datetime import datetime
 
-from DOSPINER import constants
+from DAPCROP import constants
 
-from DOSPINER.Diagnosers import Oracle
-from DOSPINER.Fixers import *
+from DAPCROP.Diagnosers import Oracle
+from DAPCROP.Fixers import *
 
 
 # Dataset partitions sizes

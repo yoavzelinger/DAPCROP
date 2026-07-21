@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 from .ADiagnoser import *
-from DOSPINER.ModelMapping.TreeNodeComponent import TreeNodeComponent
+from DAPCROP.ModelMapping.TreeNodeComponent import TreeNodeComponent
 
 class STAT(ADiagnoser):
     def __init__(self, 

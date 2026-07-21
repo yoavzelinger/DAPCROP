@@ -6,8 +6,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy.stats import pearsonr as pearson_correlation
 from shap import TreeExplainer
 
-from DOSPINER import Constants as constants
-from DOSPINER.ModelMapping.TreeNodeComponent import TreeNodeComponent
+from DAPCROP import Constants as constants
+from DAPCROP.ModelMapping.TreeNodeComponent import TreeNodeComponent
 
 from .ADiagnoser import *
 from .STAT import STAT

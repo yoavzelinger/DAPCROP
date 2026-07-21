@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 from sklearn.tree import DecisionTreeClassifier, export_text
 from sklearn.tree._tree import TREE_LEAF
 

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 
 class DataSynthesizer:
     def __init__(self,

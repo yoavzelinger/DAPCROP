@@ -1,7 +1,7 @@
 from sklearn.tree import DecisionTreeClassifier
 
-import DOSPINER.Constants as constants
-from DOSPINER.SubTreeReplaceableDecisionTree import SubTreeReplaceableDecisionTree
+import DAPCROP.Constants as constants
+from DAPCROP.SubTreeReplaceableDecisionTree import SubTreeReplaceableDecisionTree
 
 from .AFixer import *
 

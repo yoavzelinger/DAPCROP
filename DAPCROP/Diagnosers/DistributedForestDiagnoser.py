@@ -5,10 +5,10 @@ import os
 
 from sklearn.metrics import accuracy_score
 
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 
-from DOSPINER.ModelMapping.MappedForest import MappedForest
-from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
+from DAPCROP.ModelMapping.MappedForest import MappedForest
+from DAPCROP.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
 from .ADiagnoser import *
 from .Oracle import Oracle

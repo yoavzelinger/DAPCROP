@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from DOSPINER import Constants as constants
-from DOSPINER.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
+from DAPCROP import Constants as constants
+from DAPCROP.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
 
-from DOSPINER.Diagnosers.SFLDT import SFLDT
+from DAPCROP.Diagnosers.SFLDT import SFLDT
 
 from .utils import *
 

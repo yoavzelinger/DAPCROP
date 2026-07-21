@@ -14,7 +14,7 @@ except ImportError as e:
     ExtremelyFastDecisionTreeClassifier = raise_error
     iter_pandas = raise_error
 
-import DOSPINER.Constants as constants
+import DAPCROP.Constants as constants
 
 class RiverDecisionTreeWrapper(DecisionTreeClassifier):
     """

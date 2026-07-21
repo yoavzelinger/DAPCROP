@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils.validation import check_is_fitted
 
-import DOSPINER.Constants as constants
+import DAPCROP.Constants as constants
 
 from .ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
 from .ModelMapping.TreeNodeComponent import TreeNodeComponent

@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 
-from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
+from DAPCROP.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
 from .ForestFixerWrapper import ForestFixerWrapper
 

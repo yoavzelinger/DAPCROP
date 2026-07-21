@@ -6,7 +6,7 @@ from .AFixer import AFixer
 from .ForestFixerWrapper import ForestFixerWrapper
 from .DependentForestFixerWrapper import DependentForestFixerWrapper
 
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 
 FIXER_CLASSES_DICT = {}
 

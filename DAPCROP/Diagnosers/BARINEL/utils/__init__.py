@@ -1,4 +1,4 @@
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 
 from .ranking_v1 import (
     get_candidate_diagnoses as _get_candidate_diagnoses_v1,

@@ -3,7 +3,7 @@ import pandas as pd
 from collections import defaultdict
 from sklearn.metrics import accuracy_score
 
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 from .ADiagnoser import *
 
 class Oracle(ADiagnoser):

@@ -2,7 +2,7 @@ import numpy as np
 from math import prod
 from scipy.optimize import minimize
 
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 
 def get_total_likelihood(diagnosis: np.ndarray,
                          healthiness_probabilities: np.ndarray,

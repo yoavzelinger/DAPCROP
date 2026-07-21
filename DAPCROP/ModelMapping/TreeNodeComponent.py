@@ -4,8 +4,8 @@ from functools import reduce
 
 import pandas as pd
 
-from DOSPINER import Constants as constants
-from DOSPINER.DataSynthesizer import DataSynthesizer
+from DAPCROP import Constants as constants
+from DAPCROP.DataSynthesizer import DataSynthesizer
 
 class TreeNodeComponent:
     # Indexing

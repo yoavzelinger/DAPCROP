@@ -6,7 +6,7 @@ from .ADiagnoser import ADiagnoser
 from .Oracle import Oracle
 from .DistributedForestDiagnoser import DistributedForestDiagnoser
 
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 
 DIAGNOSER_CLASSES_DICT = {}
 

@@ -1,6 +1,6 @@
 from sklearn.tree import DecisionTreeClassifier
 
-from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
+from DAPCROP.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
 from .AIndependentFixer import AIndependentFixer
 

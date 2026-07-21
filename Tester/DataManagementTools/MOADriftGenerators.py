@@ -3,7 +3,7 @@ from itertools import permutations, islice
 from river.datasets.synth import SEA, Agrawal, ConceptDriftStream
 
 import Tester.TesterConstants as tester_constants
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 
 
 def _build_sea_scenarios():

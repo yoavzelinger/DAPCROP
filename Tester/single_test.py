@@ -10,7 +10,7 @@ import traceback
 
 from sklearn.base import ClassifierMixin
 
-from DOSPINER import *
+from DAPCROP import *
 
 import Tester.TesterConstants as tester_constants
 from Tester.DataManagementTools import *

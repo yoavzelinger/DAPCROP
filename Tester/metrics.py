@@ -3,7 +3,7 @@ from copy import deepcopy
 from collections import defaultdict
 from sklearn.metrics import accuracy_score
 
-from DOSPINER import *
+from DAPCROP import *
 
 import Tester.TesterConstants as tester_constants
 

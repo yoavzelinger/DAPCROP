@@ -5,13 +5,13 @@ from copy import deepcopy
 from sklearn.base import ClassifierMixin
 from sklearn.tree import DecisionTreeClassifier
 
-from DOSPINER import Constants as constants
+from DAPCROP import Constants as constants
 
-from DOSPINER.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
-from DOSPINER.ModelMapping.TreeNodeComponent import TreeNodeComponent
-from DOSPINER.ModelMapping.MappedDecisionTree import MappedDecisionTree
+from DAPCROP.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
+from DAPCROP.ModelMapping.TreeNodeComponent import TreeNodeComponent
+from DAPCROP.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
-from DOSPINER.Diagnosers import *
+from DAPCROP.Diagnosers import *
 
 class AFixer(ABC):
     alias = None
