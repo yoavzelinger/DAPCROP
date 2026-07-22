@@ -137,6 +137,6 @@ class BARINEL(SFLDT):
         if self.diagnoses is None:
             if self.stat:
                 self.combine_stat_diagnoses()
-            self.diagnoses = get_barinel_diagnoses(spectra=self.spectra, error_vector=self.error_vector, components_prior_probabilities=self.components_prior_probabilities, error_threshold=self.threshold)
+            self.diagnoses = get_barinel_diagnoses(spectra=self.spectra, error_vector=self.error_vector, components_prior_probabilities=self.components_prior_probabilities, error_threshold=self.threshold, candidates_spectra=self.binary_spectra)
         return super().get_diagnoses(retrieve_ranks, retrieve_spectra_indices)
         
