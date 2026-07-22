@@ -1,0 +1,5 @@
+V3 MOA Synthetic Drift Generators — Citations
+
+SEA (Street & Kim, KDD 2001)
+Agrawal (Agrawal, Imielinski & Swami, IEEE TKDE 1993)
+ConceptDriftStream (Bifet et al., JMLR 2010)

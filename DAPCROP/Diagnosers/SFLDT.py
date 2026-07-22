@@ -11,6 +11,7 @@ from DAPCROP.ModelMapping.TreeNodeComponent import TreeNodeComponent
 
 from .ADiagnoser import *
 from .STAT import STAT
+from .NodeSHAP import compute_node_shap_values
 
 class SFLDT(ADiagnoser):
     class UnaffectedModelException(Exception):
@@ -26,7 +27,8 @@ class SFLDT(ADiagnoser):
                  aggregate_tests: bool = constants.DEFAULT_AGGREGATE_TESTS_BY_PATHS,
                  combine_prior_confidence: bool = constants.DEFAULT_COMBINE_PRIOR_CONFIDENCE,
                  use_shap_contribution: bool = constants.DEFAULT_USE_SHAP_CONTRIBUTION,
-                 combine_components_depth: bool = constants.DEFAULT_COMBINE_COMPONENTS_DEPTH
+                 combine_components_depth: bool = constants.DEFAULT_COMBINE_COMPONENTS_DEPTH,
+                 node_shap_function_type: "constants.NodeSHAPFunctionType | str | None" = None
     ):
         """
         Initialize the SFLDT diagnoser.
@@ -41,8 +43,14 @@ class SFLDT(ADiagnoser):
         group_feature_nodes (bool): Whether to use feature components.
         combine_prior_confidence (bool): Whether to combine the confidence of the tests in the error vector calculation.
         combine_components_depth (bool): whether to include the components depth in the components' participations.
+        node_shap_function_type (NodeSHAPFunctionType | str | None): The Node-SHAP function type to use when use_shap_contribution=True.
+            Accepts either a NodeSHAPFunctionType enum value or its name as a string (e.g. "Confidence", "Criterion").
+            If None, falls back to constants.DEFAULT_NODE_SHAP_FUNCTION_TYPE.
         """
         super().__init__(mapped_model, X, y)
+        if isinstance(node_shap_function_type, str):
+            node_shap_function_type = getattr(constants.NodeSHAPFunctionType, node_shap_function_type)
+        self.node_shap_function_type = node_shap_function_type
         
         self.components_count = len(mapped_model)
         self.tests_count = len(X)
@@ -209,14 +217,37 @@ class SFLDT(ADiagnoser):
         # Including the shap contributions only for the paths participations
         self.spectra = fuzzy_spectra * self.spectra
     
+    def combine_node_shap_contributions(self) -> None:
+        """
+        Update the participation matrix to use Node-SHAP contributions for node components.
+        Computes the contribution of each node to each sample's classification using the
+        Node-SHAP algorithm (Shapley values over node subsets).
+        Only affects the spectrum; the error vector remains unchanged.
+        """
+        node_shap_values = compute_node_shap_values(self.mapped_model, self.X_after, self.y_after, self.inverse_spectra_map, self.node_shap_function_type)
+
+        fuzzy_spectra = np.maximum(node_shap_values, 0)
+
+        if len(np.unique(fuzzy_spectra)) == 1:
+            self.is_participation_fuzzy = self.combine_components_depth
+            return
+
+        fuzzy_spectra /= fuzzy_spectra.sum()
+        fuzzy_spectra[fuzzy_spectra == 0] = constants.EPSILON
+
+        # Including the node shap contributions only for the paths participations
+        self.spectra = fuzzy_spectra * self.spectra
+    
     def update_spectra_to_fuzzy(self
     ) -> None:
         """
         Update all needed attributes to support the fuzzy participation spectra
         """
         if self.use_shap_contribution:
-            assert self.group_feature_nodes, "Cannot use SHAP contributions without feature components"
-            self.combine_feature_shap_contributions()
+            if self.group_feature_nodes:
+                self.combine_feature_shap_contributions()
+            else:
+                self.combine_node_shap_contributions()
 
     def fill_spectra_and_error_vector(self, 
                                       X: pd.DataFrame, 
