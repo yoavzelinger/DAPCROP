@@ -41,13 +41,7 @@ class TreeNodeComponent:
 
         Parameters:
             component_index (int): The index of the node (in the sklearn tree).
-            parent (TreeNodeComponent): The parent node.
-            left_child (TreeNodeComponent): The left child node.
-            right_child (TreeNodeComponent): The right child node.
-            feature (str): The feature.
-            threshold (float): The threshold.
-            class_name (str): The class name.
-            spectra_index (int): The index of the node (in the spectra matrix).
+                parent (TreeNodeComponent): The parent node.
         """
         self.component_index: int = component_index
         self.parent = parent
@@ -331,6 +325,6 @@ class TreeNodeComponent:
     def __repr__(self) -> str:
         """
         Get the string representation of the node.
-        format: Node(c:<component_index>; s:<spectra_index>)
+        format: Node(<component_index>)
         """
         return f"Node({self.get_index()})"
