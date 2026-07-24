@@ -29,7 +29,7 @@ def _load_diagnoser_classes():
                 module = importlib.import_module(full_module_name)
                 for _, cls in inspect.getmembers(
                     module,
-                    lambda c: inspect.isclass(c) and issubclass(c, (ADiagnoser, DistributedForestDiagnoser))
+                    lambda c: inspect.isclass(c) and not inspect.isabstract(c) and issubclass(c, ADiagnoser)
                 ):
                     DIAGNOSER_CLASSES_DICT[cls.__name__] = cls
 
