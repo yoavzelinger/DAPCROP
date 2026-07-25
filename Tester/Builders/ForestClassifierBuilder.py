@@ -144,7 +144,7 @@ def build_forest(
                                      cv=cross_validation_split_count)
     grid_search_classifier.fit(modified_X_train, modified_y_train)
     
-    model = model_class(**grid_search_classifier.best_params_, 
+    model = model_wrapper_class(**grid_search_classifier.best_params_, 
                                 random_state=tester_constants.constants.RANDOM_STATE,
                                 )
     model.fit(X_train, y_train)
