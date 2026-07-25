@@ -31,7 +31,7 @@ class Oracle(ADiagnoser):
         if X_test is not None and y_test is not None:
             assert y_test is not None, "y_test must be provided if X_test is provided"
             # model performance did not significantly drop -> no diagnoses
-            if self.mapped_model.model.best_accuracy - accuracy_score(y_test, self.mapped_model.model.predict(X_test)) >= constants.MINIMUM_DRIFT_ACCURACY_DROP:
+            if self.mapped_model.model.best_accuracy - accuracy_score(y_test, self.mapped_model.model.predict(X_test)) >= constants.TREE_MINIMUM_DRIFT_ACCURACY_DROP:
                 self.diagnoses = []
 
     def get_diagnoses(self,

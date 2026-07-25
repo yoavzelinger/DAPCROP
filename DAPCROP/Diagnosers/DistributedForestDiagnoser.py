@@ -112,7 +112,7 @@ class DistributedForestDiagnoser(ADiagnoser):
         self.diagnoses: list[tuple[list[int], float]] = []
 
         # diagnose only buggy estimators
-        is_estimator_buggy: Callable[[MappedDecisionTree], bool] = lambda mapped_estimator: mapped_estimator.model.best_accuracy - accuracy_score(self.y_after, mapped_estimator.model.predict(self.X_after)) >= constants.MINIMUM_DRIFT_ACCURACY_DROP
+        is_estimator_buggy: Callable[[MappedDecisionTree], bool] = lambda mapped_estimator: mapped_estimator.model.best_accuracy - accuracy_score(self.y_after, mapped_estimator.model.predict(self.X_after)) >= constants.TREE_MINIMUM_DRIFT_ACCURACY_DROP
         buggy_estimators = filter((lambda estimator_index_mapped_pair: is_estimator_buggy(estimator_index_mapped_pair[1])), enumerate(self.mapped_model.mapped_estimators)) # needs to include the estimator index to maintain the global conversion
         diagnosis_tasks = [(estimator_index, mapped_estimator, self.base_diagnoser_creator, self.convert_indices_to_global)
                            for estimator_index, mapped_estimator in buggy_estimators
