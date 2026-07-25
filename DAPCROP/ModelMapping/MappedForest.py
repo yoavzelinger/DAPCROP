@@ -65,6 +65,7 @@ class MappedForest(ATreeBasedMappedModel):
                       format='csr')
 
     def get_model_representation(self) -> str:
+        repr_list = []
         for i, tree in enumerate(self.mapped_estimators):
-            tree_repr = f"Tree {i}:\n{tree.__repr__()}\n\n"
-        return tree_repr
+            repr_list.append(f"Tree {i}:\n{tree.__repr__()}")
+        return "\n\n".join(repr_list)
