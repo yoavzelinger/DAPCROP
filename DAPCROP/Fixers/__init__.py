@@ -2,11 +2,7 @@ import os
 import importlib
 import inspect
 
-from .ForestFixerWrapper import ForestFixerWrapper
 from .AFixer import AFixer, ATreeFixer
-from .DependentForestFixerWrapper import DependentForestFixerWrapper
-
-from DAPCROP import Constants as constants
 
 FIXER_CLASSES_DICT = {}
 
@@ -50,21 +46,7 @@ def get_fixer(fixer_name: str
     ValueError: If the fixer class is not found.
     """
     assert fixer_name in FIXER_CLASSES_DICT, f"Fixer {fixer_name} is not supported"
-        
-    FixerClass = FIXER_CLASSES_DICT[fixer_name]
-    match constants.DRIFTING_MODEL_TYPE:
-        case constants.DriftingModelType.Tree:
-            return FixerClass
-        case constants.DriftingModelType.Forest:
-            FixerWrapperClass: type[ForestFixerWrapper]
-            match constants.DRIFTING_MODEL:
-                case constants.DriftingModel.RandomForest:
-                    FixerWrapperClass = ForestFixerWrapper
-                case constants.DriftingModel.AdaBoost:
-                    FixerWrapperClass = DependentForestFixerWrapper
-            return lambda *args, **kwargs: FixerWrapperClass(
-                FixerClass,
-                *args, **kwargs
-                )
+    
+    return FIXER_CLASSES_DICT[fixer_name]
 
 __all__ = ["AFixer", "get_fixer"]

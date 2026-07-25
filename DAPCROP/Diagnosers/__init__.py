@@ -4,9 +4,6 @@ import inspect
 
 from .ADiagnoser import ADiagnoser
 from .Oracle import Oracle
-from .DistributedForestDiagnoser import DistributedForestDiagnoser
-
-from DAPCROP import Constants as constants
 
 DIAGNOSER_CLASSES_DICT = {}
 
@@ -56,15 +53,6 @@ def get_diagnoser(diagnoser: str | type[Oracle]
         assert diagnoser in DIAGNOSER_CLASSES_DICT, f"Diagnoser {diagnoser} is not supported"
         DiagnoserClass = DIAGNOSER_CLASSES_DICT[diagnoser]
     
-    match constants.DRIFTING_MODEL_TYPE:
-        case constants.DriftingModelType.Tree:
-            return DiagnoserClass
-        case constants.DriftingModelType.Forest:
-            if not constants.DISTRIBUTE_DIAGNOSES_COMPUTATION:
-                return DiagnoserClass
-            return lambda *args, **kwargs: DistributedForestDiagnoser(
-                DiagnoserClass,
-                *args, **kwargs
-                )
+    return DiagnoserClass
 
 __all__ = ["ADiagnoser", "get_diagnoser", "Oracle"]
