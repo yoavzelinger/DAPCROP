@@ -41,7 +41,7 @@ class TreeNodeComponent:
 
         Parameters:
             component_index (int): The index of the node (in the sklearn tree).
-                parent (TreeNodeComponent): The parent node.
+            parent (TreeNodeComponent): The parent node.
         """
         self.component_index: int = component_index
         self.parent = parent

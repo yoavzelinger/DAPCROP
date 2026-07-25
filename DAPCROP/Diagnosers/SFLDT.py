@@ -216,7 +216,7 @@ class SFLDT(ADiagnoser):
 
         # Including the shap contributions only for the paths participations
         self.spectra = fuzzy_spectra * self.spectra
-    
+
     def combine_node_shap_contributions(self) -> None:
         """
         Update the participation matrix to use Node-SHAP contributions for node components.
@@ -237,7 +237,7 @@ class SFLDT(ADiagnoser):
 
         # Including the node shap contributions only for the paths participations
         self.spectra = fuzzy_spectra * self.spectra
-    
+
     def update_spectra_to_fuzzy(self
     ) -> None:
         """
