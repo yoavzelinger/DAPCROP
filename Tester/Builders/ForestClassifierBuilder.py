@@ -145,8 +145,8 @@ def build_forest(
     grid_search_classifier.fit(modified_X_train, modified_y_train)
     
     model = model_class(**grid_search_classifier.best_params_, 
-                                   random_state=tester_constants.constants.RANDOM_STATE,
-                                   )
+                                random_state=tester_constants.constants.RANDOM_STATE,
+                                )
     model.fit(X_train, y_train)
     model.best_accuracy = accuracy_score(y_validation, model.predict(X_validation))
     
