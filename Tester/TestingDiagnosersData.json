@@ -17,7 +17,7 @@
         "parameters": {
             "aggregate_tests": true
         },
-        "disabled": false
+        "disabled": true
     },
     {
         "output_name": "Components_Depth-BARINEL",
@@ -25,7 +25,7 @@
         "parameters": {
             "combine_components_depth": true
         },
-        "disabled": false
+        "disabled": true
     },
     {
         "output_name": "Feature_Components-BARINEL",
@@ -41,7 +41,7 @@
         "parameters": {
             "combine_prior_confidence": true
         },
-        "disabled": false
+        "disabled": true
     },
     {
         "output_name": "Components_Depth-Aggregated_Tests-BARINEL",
@@ -50,7 +50,7 @@
             "aggregate_tests": true,
             "combine_components_depth": true
         },
-        "disabled": false
+        "disabled": true
     },
     {
         "output_name": "Feature_Components-Aggregated_Tests-BARINEL",
@@ -68,7 +68,7 @@
             "aggregate_tests": true,
             "combine_prior_confidence": true
         },
-        "disabled": false
+        "disabled": true
     },
     {
         "output_name": "Feature_Components-Components_Depth-BARINEL",
@@ -86,7 +86,7 @@
             "combine_components_depth": true,
             "combine_prior_confidence": true
         },
-        "disabled": false
+        "disabled": true
     },
     {
         "output_name": "Prior_Confidence-Feature_Components-BARINEL",
@@ -124,7 +124,7 @@
             "combine_components_depth": true,
             "combine_prior_confidence": true
         },
-        "disabled": false
+        "disabled": true
     },
     {
         "output_name": "Prior_Confidence-Feature_Components-Aggregated_Tests-BARINEL",
