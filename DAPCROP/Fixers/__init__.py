@@ -2,8 +2,8 @@ import os
 import importlib
 import inspect
 
-from .AFixer import AFixer
 from .ForestFixerWrapper import ForestFixerWrapper
+from .AFixer import AFixer, ATreeFixer
 from .DependentForestFixerWrapper import DependentForestFixerWrapper
 
 from DAPCROP import Constants as constants
@@ -12,7 +12,7 @@ FIXER_CLASSES_DICT = {}
 
 def _load_fixer_classes():
     """
-    Load all classes in this package and subpackages that inherit from AFixer.
+    Load all classes in this package and subpackages that inherit from ATreeFixer.
     """
     base_dir = os.path.dirname(__file__)
     base_pkg = __name__
@@ -29,7 +29,7 @@ def _load_fixer_classes():
                 module = importlib.import_module(full_module_name)
                 for _, cls in inspect.getmembers(
                     module,
-                    lambda c: inspect.isclass(c) and issubclass(c, (AFixer, ForestFixerWrapper)) and c is not AFixer
+                    lambda c: inspect.isclass(c) and not inspect.isabstract(c) and issubclass(c, ATreeFixer)
                 ):
                     FIXER_CLASSES_DICT[cls.__name__] = cls
 
