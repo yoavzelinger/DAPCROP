@@ -23,7 +23,8 @@ class AFixer(ABC):
                  X_prior: pd.DataFrame = None,
                  y_prior: pd.Series = None,
                  sklearn_model: ClassifierMixin = None,
-                 sample_weight: pd.Series = None
+                 sample_weight: pd.Series = None,
+                 **kwargs: dict,
     ):
         """
         Initialize the Fixer.
@@ -86,15 +87,8 @@ class ATreeFixer(AFixer):
     """
     Abstract class for tree-based fixers.
     """
-    def __init__(self, 
-                 mapped_model: MappedDecisionTree,
-                 X: pd.DataFrame,
-                 y: pd.Series,
-                 faulty_nodes_indices: list[int],
-                 X_prior: pd.DataFrame = None,
-                 y_prior: pd.Series = None,
-                 sklearn_model: DecisionTreeClassifier = None,
-                 sample_weight: pd.Series = None
+    def __init__(self,
+                 **kwargs: dict,
     ):
-        super().__init__(mapped_model, X, y, faulty_nodes_indices, X_prior, y_prior, sklearn_model, sample_weight=sample_weight)
-        self.faulty_nodes_indices.sort(key=lambda idx: mapped_model[idx].depth)
+        super().__init__(**kwargs)
+        self.faulty_nodes_indices.sort(key=lambda node_index: self.mapped_model[node_index].depth)
