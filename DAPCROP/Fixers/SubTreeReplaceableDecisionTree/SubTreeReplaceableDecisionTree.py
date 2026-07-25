@@ -8,8 +8,8 @@ from sklearn.utils.validation import check_is_fitted
 
 import DAPCROP.Constants as constants
 
-from .ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
-from .ModelMapping.TreeNodeComponent import TreeNodeComponent
+from DAPCROP.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
+from DAPCROP.ModelMapping.TreeNodeComponent import TreeNodeComponent
 
 from .RiverDecisionTreeWrapper import RiverDecisionTreeWrapper as RiverDecisionTree
 from .PriorDataDecisionTreeClassifierWrapper import PriorDataDecisionTreeClassifierWrapper as PriorDataDecisionTreeClassifier

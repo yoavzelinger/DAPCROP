@@ -1,7 +1,7 @@
 from sklearn.tree import DecisionTreeClassifier
 
 import DAPCROP.Constants as constants
-from DAPCROP.SubTreeReplaceableDecisionTree import SubTreeReplaceableDecisionTree
+from .SubTreeReplaceableDecisionTree.SubTreeReplaceableDecisionTree import SubTreeReplaceableDecisionTree
 
 from .AFixer import *
 
