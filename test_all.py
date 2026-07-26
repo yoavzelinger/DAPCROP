@@ -8,7 +8,7 @@ from scipy import __version__ as scipy_version
 from warnings import filterwarnings, simplefilter as warnings_simplefilter
 
 import Evaluation.TesterConstants as tester_constants
-from Evaluation.single_test import run_single_test, run_single_test_v2, run_single_test_v3, sanity_run
+from .single_test import run_single_test, run_single_test_v2, run_single_test_v3, sanity_run
 
 def main():
     print("Initializing")
