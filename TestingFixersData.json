@@ -15,6 +15,15 @@
         "disabled": false
     },
     {
+        "output_name": "Original_Subtree_No_Prior",
+        "class_name": "SubTreeRetrainingFixer",
+        "parameters": {
+            "use_prior_knowledge": "Ignore",
+            "subtree_type": "Original"
+        },
+        "disabled": false
+    },
+    {
         "output_name": "Single_Top_Tweak",
         "class_name": "TopNodeFixer",
         "parameters": {},
