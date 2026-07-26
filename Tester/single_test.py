@@ -11,8 +11,6 @@ import traceback
 from sklearn.base import ClassifierMixin
 
 from DAPCROP import *
-from DAPCROP.Diagnosers import get_diagnoser as get_base_diagnoser
-from DAPCROP.Diagnosers.DistributedForestDiagnoser import DistributedForestDiagnoser
 from DAPCROP.Fixers import get_fixer as get_base_fixer
 from DAPCROP.Fixers.ForestFixerWrapper import ForestFixerWrapper
 from DAPCROP.Fixers.DependentForestFixerWrapper import DependentForestFixerWrapper
@@ -21,19 +19,6 @@ import Tester.TesterConstants as tester_constants
 from Tester.DataManagementTools import *
 from Tester.Builders import build_tree, build_forest
 from Tester.metrics import get_accuracy, get_wasted_effort, get_top_k
-
-def get_diagnoser(diagnoser: str | type[Oracle]):
-    DiagnoserClass = get_base_diagnoser(diagnoser)
-    match tester_constants.constants.DRIFTING_MODEL_TYPE:
-        case tester_constants.constants.DriftingModelType.Tree:
-            return DiagnoserClass
-        case tester_constants.constants.DriftingModelType.Forest:
-            if not tester_constants.constants.DISTRIBUTE_DIAGNOSES_COMPUTATION:
-                return DiagnoserClass
-            return lambda *args, **kwargs: DistributedForestDiagnoser(
-                DiagnoserClass,
-                *args, **kwargs
-            )
 
 def get_fixer(fixer_name: str):
     FixerClass = get_base_fixer(fixer_name)

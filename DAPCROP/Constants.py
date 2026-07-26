@@ -1,5 +1,6 @@
-from enum import Enum, auto
 from .APPETITE.Constants import *
+
+from enum import Enum, auto
 
 class DriftingModel(Enum):
     DecisionTree = auto()
