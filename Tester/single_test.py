@@ -11,31 +11,10 @@ import traceback
 from sklearn.base import ClassifierMixin
 
 from DAPCROP import *
-from DAPCROP.Fixers import get_fixer as get_base_fixer
-from DAPCROP.Fixers.ForestFixerWrapper import ForestFixerWrapper
-from DAPCROP.Fixers.DependentForestFixerWrapper import DependentForestFixerWrapper
-
 import Tester.TesterConstants as tester_constants
 from Tester.DataManagementTools import *
 from Tester.Builders import build_tree, build_forest
 from Tester.metrics import get_accuracy, get_wasted_effort, get_top_k
-
-def get_fixer(fixer_name: str):
-    FixerClass = get_base_fixer(fixer_name)
-    match tester_constants.constants.DRIFTING_MODEL_TYPE:
-        case tester_constants.constants.DriftingModelType.Tree:
-            return FixerClass
-        case tester_constants.constants.DriftingModelType.Forest:
-            match tester_constants.constants.DRIFTING_MODEL:
-                case tester_constants.constants.DriftingModel.RandomForest:
-                    FixerWrapperClass = ForestFixerWrapper
-                case tester_constants.constants.DriftingModel.AdaBoost:
-                    FixerWrapperClass = DependentForestFixerWrapper
-            return lambda *args, **kwargs: FixerWrapperClass(
-                FixerClass,
-                *args, **kwargs
-            )
-
 def get_dataset(directory: str,
                 file_name: str,
                 file_extension: str = ".csv"
