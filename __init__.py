@@ -1,1 +1,1 @@
-from .test_all import main
+from .evaluator import main
