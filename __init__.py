@@ -1,2 +1,1 @@
-from . import TesterConstants as tester_constants
-from .single_test import *
+from .test_all import main
