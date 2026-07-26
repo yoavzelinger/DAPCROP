@@ -12,10 +12,10 @@ from sklearn.base import ClassifierMixin
 
 from Methodology import *
 
-from . import TesterConstants as tester_constants
+import Evaluation.TesterConstants as tester_constants
 from .DataManagementTools import *
-from .Builders import get_sklearn_model
-from .metrics import get_accuracy, get_wasted_effort, get_top_k
+from Evaluation.Builders import get_sklearn_model
+from Evaluation.metrics import get_accuracy, get_wasted_effort, get_top_k
 
 def get_dataset(directory: str,
                 file_name: str,
