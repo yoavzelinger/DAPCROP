@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 
 from Methodology import *
 
-import Evaluation.TesterConstants as tester_constants
+from . import TesterConstants as tester_constants
 
 def get_accuracy(model, X, y):
     with warnings.catch_warnings():

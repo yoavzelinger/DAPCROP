@@ -5,7 +5,7 @@ from typing import Callable, Generator
 
 from pandas.api.types import is_numeric_dtype
 
-from Evaluation import TesterConstants as tester_constants
+from .. import TesterConstants as tester_constants
 
 from . import lazy_utils
 

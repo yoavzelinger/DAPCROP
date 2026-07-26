@@ -2,7 +2,7 @@ from itertools import permutations, islice
 
 from river.datasets.synth import SEA, Agrawal, ConceptDriftStream
 
-import Evaluation.TesterConstants as tester_constants
+from .. import TesterConstants as tester_constants
 from Methodology import Constants as constants
 
 

@@ -5,7 +5,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import accuracy_score
 
-import Evaluation.TesterConstants as tester_constants
+from .. import TesterConstants as tester_constants
 
 def build_tree(
         X_train: pd.DataFrame,

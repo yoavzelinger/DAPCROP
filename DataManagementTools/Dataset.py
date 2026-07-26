@@ -6,7 +6,7 @@ import math
 
 from typing import Generator, Callable
 
-import Evaluation.TesterConstants as tester_constants
+from .. import TesterConstants as tester_constants
 
 from .DriftSimulation import single_feature_concept_drift_generator, multiple_features_concept_drift_generator
 from .MOADriftGenerators import MOA_GENERATOR_CONFIGS
