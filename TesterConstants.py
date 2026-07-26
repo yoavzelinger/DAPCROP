@@ -143,7 +143,7 @@ assert isinstance(DEFAULT_TESTING_FIXER, list) and all(isinstance(fixer_data, di
 #   TESTING DIAGNOSERS DATA
 TESTING_DIAGNOSERS_CONFIGURATION_FILE_NAME = "TestingDiagnosersData"
 diagnosers_data = {}
-with open(os_path.join(__package__, f"{TESTING_DIAGNOSERS_CONFIGURATION_FILE_NAME}.json"), "r") as testing_diagnosers_configuration_file:
+with open(os_path.join(os_path.dirname(__file__), f"{TESTING_DIAGNOSERS_CONFIGURATION_FILE_NAME}.json"), "r") as testing_diagnosers_configuration_file:
     diagnosers_data = load_json(testing_diagnosers_configuration_file)
 diagnosers_data: list[dict[str, object]] = [diagnoser_data for diagnoser_data in diagnosers_data if not diagnoser_data.get("disabled", False)]
 diagnosers_output_names = list(map(lambda diagnoser_data: diagnoser_data.get("output_name", diagnoser_data["class_name"]), diagnosers_data))
@@ -151,7 +151,7 @@ diagnosers_output_names = list(map(lambda diagnoser_data: diagnoser_data.get("ou
 #   TESTING FIXERS DATA
 TESTING_FIXERS_CONFIGURATION_FILE_NAME = "TestingFixersData"
 fixers_data = {}
-with open(os_path.join(__package__, f"{TESTING_FIXERS_CONFIGURATION_FILE_NAME}.json"), "r") as testing_fixers_configuration_file:
+with open(os_path.join(os_path.dirname(__file__), f"{TESTING_FIXERS_CONFIGURATION_FILE_NAME}.json"), "r") as testing_fixers_configuration_file:
     fixers_data = load_json(testing_fixers_configuration_file)
 fixers_data: list[dict[str, object]] = [fixer_data for fixer_data in fixers_data if not fixer_data.get("disabled", False)]
 fixers_output_names = list(map(lambda fixer_data: fixer_data.get("output_name", fixer_data["class_name"]), fixers_data))
