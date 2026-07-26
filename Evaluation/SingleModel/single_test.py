@@ -11,7 +11,7 @@ from Methodology import *
 
 import Evaluation.TesterConstants as tester_constants
 from .DataManagementTools import *
-from Evaluation.Builders import get_sklearn_model
+from Evaluation.Builders import *
 from Evaluation.metrics import get_accuracy, get_wasted_effort, get_top_k
 
 def get_dataset(directory: str,
