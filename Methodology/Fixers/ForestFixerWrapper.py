@@ -8,13 +8,13 @@ import os
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-import DAPCROP.Constants as constants
-from DAPCROP.APPETITE.ModelMapping.MappedDecisionTree import MappedDecisionTree
-from DAPCROP.ModelMapping.MappedForest import MappedForest
+import Methodology.Constants as constants
+from Methodology.APPETITE.ModelMapping.MappedDecisionTree import MappedDecisionTree
+from Methodology.ModelMapping.MappedForest import MappedForest
 
-from DAPCROP.Diagnosers import *
+from Methodology.Diagnosers import *
 
-from DAPCROP.APPETITE.Fixers.AFixer import AFixer, ATreeFixer
+from Methodology.APPETITE.Fixers.AFixer import AFixer, ATreeFixer
 
 def _fix_estimator_worker(estimator_index: int,
                           mapped_estimator: MappedDecisionTree,

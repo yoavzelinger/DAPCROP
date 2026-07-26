@@ -5,9 +5,9 @@ from scipy.sparse import csr_matrix, hstack
 
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 
-from DAPCROP.APPETITE.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
-from DAPCROP.APPETITE.ModelMapping.TreeNodeComponent import TreeNodeComponent
-from DAPCROP.APPETITE.ModelMapping.MappedDecisionTree import MappedDecisionTree
+from Methodology.APPETITE.ModelMapping.ATreeBasedMappedModel import ATreeBasedMappedModel
+from Methodology.APPETITE.ModelMapping.TreeNodeComponent import TreeNodeComponent
+from Methodology.APPETITE.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
 class MappedForest(ATreeBasedMappedModel):
     mapped_estimators: list[MappedDecisionTree]

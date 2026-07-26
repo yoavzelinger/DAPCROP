@@ -463,6 +463,7 @@ def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_cons
                             f"Scenario: {scenario_description}"
                             )
 
+
 def get_example_mapped_model(directory=tester_constants.DATASETS_DIRECTORY_FULL_PATH, file_name=tester_constants.EXAMPLE_FILE_NAME):
     dataset = get_dataset(directory, file_name)
     X_train, y_train = dataset.get_before_concept_data()

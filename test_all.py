@@ -15,7 +15,7 @@ if __name__ == "__main__":
     warnings_simplefilter(action='ignore', category=FutureWarning)
     filterwarnings("ignore", message="The number of unique classes is greater than 50%")
 
-    from Tester import *
+    from Evaluation import *
 
     ##### Parser Arguments #####
     parser = ArgumentParser(description="Run all tests")
