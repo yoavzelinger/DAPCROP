@@ -200,11 +200,11 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
 
             # Comparable Baselines
 
-            new_all_retrained_model = get_sklearn_model(X_before_repair, y_before_repair, previous_model=mapped_model.model)
+            new_all_retrained_model = get_sklearn_model(X_before_repair, y_before_repair)
             new_all_retrained_accuracy = get_accuracy(new_all_retrained_model, X_test, y_test)
             new_all_retrained_accuracy_bump = new_all_retrained_accuracy - post_drift_test_accuracy
 
-            new_drift_retrained_model = get_sklearn_model(X_repair, y_repair, previous_model=mapped_model.model)
+            new_drift_retrained_model = get_sklearn_model(X_repair, y_repair)
             new_drift_retrained_accuracy = get_accuracy(new_drift_retrained_model, X_test, y_test)
             new_drift_retrained_accuracy_bump = new_drift_retrained_accuracy - post_drift_test_accuracy
 
