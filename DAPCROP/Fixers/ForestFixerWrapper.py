@@ -9,12 +9,12 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 import DAPCROP.Constants as constants
-from DAPCROP.ModelMapping.MappedDecisionTree import MappedDecisionTree
+from DAPCROP.APPETITE.ModelMapping.MappedDecisionTree import MappedDecisionTree
 from DAPCROP.ModelMapping.MappedForest import MappedForest
 
 from DAPCROP.Diagnosers import *
 
-from .AFixer import AFixer, ATreeFixer
+from DAPCROP.APPETITE.Fixers.AFixer import AFixer, ATreeFixer
 
 def _fix_estimator_worker(estimator_index: int,
                           mapped_estimator: MappedDecisionTree,

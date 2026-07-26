@@ -1,4 +1,2 @@
-from .ATreeBasedMappedModel import ATreeBasedMappedModel
-from .TreeNodeComponent import TreeNodeComponent
-from .MappedDecisionTree import MappedDecisionTree
+from ..APPETITE.ModelMapping import *
 from .MappedForest import MappedForest

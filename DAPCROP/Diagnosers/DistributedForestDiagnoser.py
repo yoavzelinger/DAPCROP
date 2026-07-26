@@ -8,11 +8,11 @@ from sklearn.metrics import accuracy_score
 from DAPCROP import Constants as constants
 
 from DAPCROP.ModelMapping.MappedForest import MappedForest
-from DAPCROP.ModelMapping.MappedDecisionTree import MappedDecisionTree
+from DAPCROP.APPETITE.ModelMapping.MappedDecisionTree import MappedDecisionTree
 
-from .ADiagnoser import *
-from .Oracle import Oracle
-from .SFLDT import SFLDT
+from DAPCROP.APPETITE.Diagnosers.ADiagnoser import ADiagnoser
+from DAPCROP.APPETITE.Diagnosers.Oracle import Oracle
+from DAPCROP.APPETITE.Diagnosers.SFLDT import SFLDT
 
 def _diagnose_estimator_worker(estimator_index: int,
                                mapped_estimator: MappedDecisionTree,
