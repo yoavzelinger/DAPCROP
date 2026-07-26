@@ -8,8 +8,6 @@ from typing import Generator
 
 import traceback
 
-from sklearn.base import ClassifierMixin
-
 from Methodology import *
 
 import Evaluation.TesterConstants as tester_constants
