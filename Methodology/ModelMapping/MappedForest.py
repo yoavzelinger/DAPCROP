@@ -69,3 +69,15 @@ class MappedForest(ATreeBasedMappedModel):
         for i, tree in enumerate(self.mapped_estimators):
             repr_list.append(f"Tree {i}:\n{tree.__repr__()}")
         return "\n\n".join(repr_list)
+
+    def get_all_leaves(self) -> list[TreeNodeComponent]:
+        """
+        Get all the leaf components of the mapped model.
+
+        Returns:
+        list[TreeNodeComponent]: The leaf components.
+        """
+        leaves = []
+        for mapped_estimator in self.mapped_estimators:
+            leaves.extend(mapped_estimator.get_all_leaves())
+        return leaves
