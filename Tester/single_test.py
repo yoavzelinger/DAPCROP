@@ -11,10 +11,12 @@ import traceback
 from sklearn.base import ClassifierMixin
 
 from DAPCROP import *
+
 import Tester.TesterConstants as tester_constants
 from Tester.DataManagementTools import *
 from Tester.Builders import build_tree, build_forest
 from Tester.metrics import get_accuracy, get_wasted_effort, get_top_k
+
 def get_dataset(directory: str,
                 file_name: str,
                 file_extension: str = ".csv"
@@ -34,14 +36,6 @@ def get_sklearn_model(X_train,
         case _:
             raise ValueError(f"Unsupported drifting model: {tester_constants.constants.DRIFTING_MODEL_TYPE}")
 
-def get_mapped_model(sklearn_model, feature_types, X_train, y_train):
-    match tester_constants.constants.DRIFTING_MODEL_TYPE:
-        case tester_constants.constants.DriftingModelType.Tree:
-            return MappedDecisionTree(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
-        case tester_constants.constants.DriftingModelType.Forest:
-            return MappedForest(sklearn_model, feature_types=feature_types, X=X_train, y=y_train)
-        case _:
-            raise ValueError(f"Unsupported drifting model: {tester_constants.constants.DRIFTING_MODEL_TYPE}")
 
 def drift_tree(mapped_model: ATreeBasedMappedModel,
                dataset: Dataset,
