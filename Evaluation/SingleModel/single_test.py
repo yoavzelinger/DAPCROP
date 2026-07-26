@@ -1,8 +1,7 @@
 import os
 import sys
 import pandas as pd
-from itertools import combinations, chain
-from copy import deepcopy
+from itertools import combinations
 from collections import defaultdict
 from typing import Generator
 
