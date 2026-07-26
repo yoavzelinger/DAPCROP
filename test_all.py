@@ -79,9 +79,9 @@ if __name__ == "__main__":
     print(f"Running tests with drift size: {drift_size_string} ({min_drift_size} -> {max_drift_size})")
 
 
-    ##### Create Results DataFrame #####
-    raw_results = pd.DataFrame(columns=tester_constants.RAW_RESULTS_COLUMN_NAMES)
-    errors = pd.DataFrame(columns=["name", "error"])
+    ##### Create Results Accumulators #####
+    raw_results_list = []
+    errors_list = []
 
 
     ###### Run Tests #####
@@ -104,9 +104,9 @@ if __name__ == "__main__":
                 if isinstance(test_result, Exception):
                     if not skip_exceptions:
                         raise test_result
-                    errors = pd.concat([errors, pd.DataFrame([{"name": generator_name, "error": test_result}])], ignore_index=True)
+                    errors_list.append({"name": generator_name, "error": test_result})
                     continue
-                raw_results = pd.concat([raw_results, pd.DataFrame([test_result])], ignore_index=True)
+                raw_results_list.append(test_result)
     else:
         single_test_function = run_single_test if tester_constants.DRIFT_SYNTHESIZING_VERSION == 1 else run_single_test_v2
 
@@ -130,10 +130,11 @@ if __name__ == "__main__":
                     if isinstance(test_result, Exception):
                         if not skip_exceptions:
                             raise test_result
-                        errors = pd.concat([errors, pd.DataFrame([{"name": dataset_name, "error": test_result}])], ignore_index=True)
+                        errors_list.append({"name": dataset_name, "error": test_result})
                         continue
-                    raw_results = pd.concat([raw_results, pd.DataFrame([test_result])], ignore_index=True)
-
+                    raw_results_list.append(test_result)
+    raw_results = pd.DataFrame(raw_results_list, columns=tester_constants.RAW_RESULTS_COLUMN_NAMES)
+    errors = pd.DataFrame(errors_list, columns=["name", "error"])
 
     ##### Prepare Output Files #####
     temp_files_suffix = ""
