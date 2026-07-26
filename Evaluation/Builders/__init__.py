@@ -11,3 +11,5 @@ def get_sklearn_model(X_train, y_train, previous_model=None):
             return build_forest(X_train, y_train, model=deepcopy(previous_model))
         case _:
             raise ValueError(f"Unsupported drifting model: {constants.DRIFTING_MODEL_TYPE}")
+
+__all__ = ["get_sklearn_model"]
