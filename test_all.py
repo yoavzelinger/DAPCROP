@@ -104,9 +104,9 @@ if __name__ == "__main__":
                 if isinstance(test_result, Exception):
                     if not skip_exceptions:
                         raise test_result
-                    errors = errors._append({"name": generator_name, "error": test_result}, ignore_index=True)
+                    errors = pd.concat([errors, pd.DataFrame([{"name": generator_name, "error": test_result}])], ignore_index=True)
                     continue
-                raw_results = raw_results._append(test_result, ignore_index=True)
+                raw_results = pd.concat([raw_results, pd.DataFrame([test_result])], ignore_index=True)
     else:
         single_test_function = run_single_test if tester_constants.DRIFT_SYNTHESIZING_VERSION == 1 else run_single_test_v2
 
@@ -130,9 +130,9 @@ if __name__ == "__main__":
                     if isinstance(test_result, Exception):
                         if not skip_exceptions:
                             raise test_result
-                        errors = errors._append({"name": dataset_name, "error": test_result}, ignore_index=True)
+                        errors = pd.concat([errors, pd.DataFrame([{"name": dataset_name, "error": test_result}])], ignore_index=True)
                         continue
-                    raw_results = raw_results._append(test_result, ignore_index=True)
+                    raw_results = pd.concat([raw_results, pd.DataFrame([test_result])], ignore_index=True)
 
 
     ##### Prepare Output Files #####

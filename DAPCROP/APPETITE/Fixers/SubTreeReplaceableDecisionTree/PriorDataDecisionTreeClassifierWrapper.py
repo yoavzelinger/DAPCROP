@@ -22,6 +22,8 @@ class PriorDataDecisionTreeClassifierWrapper(DecisionTreeClassifier):
     def fit(self, X: pd.DataFrame | np.ndarray, y: pd.Series, sample_weight: pd.Series = None):
         combined_X = pd.concat([self.X_prior, X], ignore_index=True)
         combined_y = pd.concat([self.y_prior, y], ignore_index=True)
+        if hasattr(y, 'dtype'):
+            combined_y = combined_y.astype(y.dtype)
         if sample_weight is not None:
             # Prior data gets weight 1.0
             prior_weights = pd.Series(1.0, index=range(len(self.X_prior)))
