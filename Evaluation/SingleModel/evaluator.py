@@ -99,7 +99,7 @@ def main():
 
         for generator_name in generators:
             print(f"Running tests for generator: {generator_name}")
-            for test_result in run_single_test_v3(generator_name, repair_window_test_sizes=repair_window_test_sizes, fixers_data=tester_constants.fixers_data):
+            for test_result in run_single_test_v3(generator_name, repair_window_test_sizes=repair_window_test_sizes, diagnosers_data=tester_constants.diagnosers_data, fixers_data=tester_constants.fixers_data):
                 if isinstance(test_result, Exception):
                     if not skip_exceptions:
                         raise test_result
