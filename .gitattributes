@@ -1,0 +1,2 @@
+# Normalize all text files to LF in the repo, use native line endings in working copy
+* text=auto
