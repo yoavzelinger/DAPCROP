@@ -87,7 +87,8 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
                         X_repair: pd.DataFrame,
                         y_repair: pd.Series,
                         drifted_features: list[str],
-                        diagnosers_data: list[dict[str, object]]
+                        diagnosers_data: list[dict[str, object]],
+                        calculate_oracle_diagnosis: bool = True,
                         ) -> Generator[tuple[str, list[int], dict[str, object]], None, None]:
     """
     Generate diagnoses from multiple diagnosers.
@@ -114,9 +115,10 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
 
     faulty_features_nodes = group_by_feature(mapped_model, true_faulty_nodes_indices)
     
-    yield Oracle.__name__, true_faulty_nodes_indices, { 
-        tester_constants.DRIFTED_FEATURES_COLUMN_NAME: ", ".join(map(lambda feature: f"{feature}: {faulty_features_nodes[feature]}", faulty_features_nodes))
-    }
+    if calculate_oracle_diagnosis:
+        yield Oracle.__name__, true_faulty_nodes_indices, { 
+            tester_constants.DRIFTED_FEATURES_COLUMN_NAME: ", ".join(map(lambda feature: f"{feature}: {faulty_features_nodes[feature]}", faulty_features_nodes))
+        }
 
     drifted_features = list(faulty_features_nodes.keys())
 
