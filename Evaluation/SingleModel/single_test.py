@@ -89,6 +89,7 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
                         drifted_features: list[str],
                         diagnosers_data: list[dict[str, object]],
                         calculate_oracle_diagnosis: bool = True,
+                        calculate_diagnosis_metrics: bool = True,
                         ) -> Generator[tuple[str, list[int], dict[str, object]], None, None]:
     """
     Generate diagnoses from multiple diagnosers.
@@ -135,17 +136,16 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
         diagnosis = diagnoses[0] if diagnoses else []
         detected_faulty_features = set(group_by_feature(mapped_model, diagnosis).keys())
         
-        wasted_effort = get_wasted_effort(mapped_model, diagnoses, faulty_features_nodes)
-        
         diagnosis_results = {
             f"{diagnoser_output_name} {tester_constants.FAULTY_FEATURES_NAME_SUFFIX}": ", ".join(detected_faulty_features),
             f"{diagnoser_output_name} {tester_constants.DIAGNOSES_NAME_SUFFIX}": ", ".join(map(str, diagnoses)),
-            f"{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}": wasted_effort
+            f"{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}": \
+                get_wasted_effort(mapped_model, diagnoses, faulty_features_nodes) if calculate_diagnosis_metrics else 0
         }
 
         for K in tester_constants.CORRECTLY_IDENTIFIED_K_LIST:
             diagnosis_results[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=K)}"] = \
-                get_top_k(mapped_model, diagnoses, drifted_features, K) * 100
+                get_top_k(mapped_model, diagnoses, drifted_features, K) * 100 if calculate_diagnosis_metrics else 0
         
         yield diagnoser_output_name, diagnosis, diagnosis_results
 
