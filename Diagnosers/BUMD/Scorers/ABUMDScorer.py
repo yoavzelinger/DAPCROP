@@ -42,7 +42,7 @@ class ABUMDScorer(ABC):
 
         relevant_leaf_scores = [
             self._scores[leaf]
-            for leaf in self.mapped_model.root.get_all_leaves()
+            for leaf in self.mapped_model.get_all_leaves()
             if self.is_relevant(leaf)
         ]
         if relevant_leaf_scores:
@@ -110,7 +110,7 @@ class ABUMDScorer(ABC):
         Returns:
             set[TreeNodeComponent]: The faulty leaves.
         """
-        return {leaf for leaf in self.mapped_model.root.get_all_leaves() if self.is_faulty(leaf)}
+        return {leaf for leaf in self.mapped_model.get_all_leaves() if self.is_faulty(leaf)}
 
     def should_merge(self,
                      candidate_substitutor: TreeNodeComponent,

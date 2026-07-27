@@ -49,6 +49,15 @@ class ATreeBasedMappedModel(ABC):
         str: The tree representation.
         """
         pass
+
+    def get_all_leaves(self) -> list[TreeNodeComponent]:
+        """
+        Get all the leaf components of the mapped model.
+
+        Returns:
+        list[TreeNodeComponent]: The leaf components.
+        """
+        pass
     
     def __init__(self,
                  model: ClassifierMixin,

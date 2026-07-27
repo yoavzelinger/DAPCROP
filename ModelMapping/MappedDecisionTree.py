@@ -183,3 +183,12 @@ class MappedDecisionTree(ATreeBasedMappedModel):
     
     def get_model_representation(self) -> str:
         return export_text(self.model, feature_names=list(self.data_feature_types.keys()))
+
+    def get_all_leaves(self) -> list[TreeNodeComponent]:
+        """
+        Get all the leaf components of the mapped model.
+
+        Returns:
+        list[TreeNodeComponent]: The leaf components.
+        """
+        return self.root.get_all_leaves()
