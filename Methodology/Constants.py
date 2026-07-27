@@ -7,7 +7,7 @@ class DriftingModel(Enum):
     RandomForest = auto()
     AdaBoost = auto()
 
-DRIFTING_MODEL = DriftingModel.DecisionTree
+DRIFTING_MODEL = DriftingModel.RandomForest
 
 class DriftingModelType(Enum):
     Tree = auto()
