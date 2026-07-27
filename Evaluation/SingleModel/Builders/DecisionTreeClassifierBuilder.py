@@ -30,8 +30,11 @@ def build_tree(
     if model is not None:
         model.fit(X_train, y_train)
         return model
-    
-    X_train, X_validation, y_train, y_validation = train_test_split(X_train, y_train, test_size=tester_constants.VALIDATION_SIZE, random_state=tester_constants.constants.RANDOM_STATE)
+    try:
+        X_train, X_validation, y_train, y_validation = train_test_split(X_train, y_train, test_size=tester_constants.VALIDATION_SIZE, random_state=tester_constants.constants.RANDOM_STATE)
+    except ValueError as e:
+        print(f"Skipping model building due to split error: {e}")
+        return None
 
     # Grid search modification
     modified_X_train, modified_y_train = X_train, y_train
