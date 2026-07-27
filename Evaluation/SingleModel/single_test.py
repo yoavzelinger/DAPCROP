@@ -367,6 +367,7 @@ def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_cons
     Diagnosers are skipped; only fixers are evaluated.
     """
     for (X_before, y_before), (X_repair_total, y_repair_total), (X_test, y_test), drift_description, drifted_features, drifted_features_types, drift_size, feature_types in Dataset.drift_generator_v3(generator_name):
+        repair_window_test_size = None
         try:
             sklearn_model = get_sklearn_model(X_before, y_before)
             if sklearn_model is None:
