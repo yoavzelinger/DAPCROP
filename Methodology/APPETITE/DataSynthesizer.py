@@ -35,8 +35,11 @@ class DataSynthesizer:
 
     def synthesize(self) -> tuple[pd.DataFrame, pd.Series]:
         if self.synthesized_X is None or self.synthesized_y is None:
+            self.synthesized_X = pd.DataFrame(columns=list(self.features_distribution.keys()))
+            self.synthesized_y = pd.Series(index=range(self.count), dtype=object)
+            if self.count == 0:
+                return self.synthesized_X, self.synthesized_y
             np.random.seed(constants.RANDOM_STATE)
-            self.synthesized_X = pd.DataFrame()
             for feature, distribution in self.features_distribution.items():
                 if isinstance(distribution, dict) and 'mean' in distribution:
                     self.synthesized_X[feature] = pd.Series(
@@ -53,12 +56,10 @@ class DataSynthesizer:
             class_probs = np.array(list(self.class_distribution.values()), dtype=np.float64)
             class_probs /= class_probs.sum()
             class_probs[-1] = 1.0 - class_probs[:-1].sum()
-            self.synthesized_y = pd.Series(
-                np.random.choice(
-                    list(self.class_distribution.keys()),
-                    size=self.count,
-                    p=class_probs
-                )
+            self.synthesized_y.iloc[:] = np.random.choice(
+                list(self.class_distribution.keys()),
+                size=self.count,
+                p=class_probs
             )
 
         return self.synthesized_X, self.synthesized_y
