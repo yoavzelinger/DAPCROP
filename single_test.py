@@ -1,20 +1,17 @@
 import os
 import sys
 import pandas as pd
-from itertools import combinations, chain
-from copy import deepcopy
+from itertools import combinations
 from collections import defaultdict
 from typing import Generator
 
 import traceback
 
-from sklearn.base import ClassifierMixin
-
 from Methodology import *
 
 import Evaluation.TesterConstants as tester_constants
 from .DataManagementTools import *
-from Evaluation.Builders import get_sklearn_model
+from Evaluation.Builders import *
 from Evaluation.metrics import get_accuracy, get_wasted_effort, get_top_k
 
 def get_dataset(directory: str,
@@ -156,6 +153,8 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
     X_before, y_before = dataset.get_before_concept_data()
     
     sklearn_model = get_sklearn_model(X_before, y_before)
+    if sklearn_model is None:
+        return
     pre_drift_accuracy = get_accuracy(sklearn_model, *dataset.get_test_data())
 
     if pre_drift_accuracy < tester_constants.MODEL_MINIMUM_ORIGINAL_ACCURACY:
@@ -182,10 +181,13 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
             # Comparable Baselines
 
             new_all_retrained_model = get_sklearn_model(X_before_repair, y_before_repair)
+            new_drift_retrained_model = get_sklearn_model(X_repair, y_repair)
+            if new_all_retrained_model is None or new_drift_retrained_model is None:
+                continue
+
             new_all_retrained_accuracy = get_accuracy(new_all_retrained_model, X_test, y_test)
             new_all_retrained_accuracy_bump = new_all_retrained_accuracy - post_drift_test_accuracy
 
-            new_drift_retrained_model = get_sklearn_model(X_repair, y_repair)
             new_drift_retrained_accuracy = get_accuracy(new_drift_retrained_model, X_test, y_test)
             new_drift_retrained_accuracy_bump = new_drift_retrained_accuracy - post_drift_test_accuracy
 
@@ -270,6 +272,8 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
     for (X_before, y_before), (X_repair_total, y_repair_total), (X_repair, y_repair), (X_test, y_test), drift_description, drifted_features, drifted_features_types, drift_size in drift_tree_v2(dataset, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size):
         try:
             sklearn_model = get_sklearn_model(X_before, y_before)
+            if sklearn_model is None:
+                continue
             pre_drift_accuracy = sklearn_model.best_accuracy
 
             if pre_drift_accuracy < tester_constants.MODEL_MINIMUM_ORIGINAL_ACCURACY:
@@ -295,10 +299,13 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
             # Comparable Baselines
 
             new_all_retrained_model = get_sklearn_model(X_before_repair, y_before_repair)
+            new_drift_retrained_model = get_sklearn_model(X_repair, y_repair)
+            if new_all_retrained_model is None or new_drift_retrained_model is None:
+                continue
+
             new_all_retrained_accuracy = get_accuracy(new_all_retrained_model, X_test, y_test)
             new_all_retrained_accuracy_bump = new_all_retrained_accuracy - post_drift_test_accuracy
 
-            new_drift_retrained_model = get_sklearn_model(X_repair, y_repair)
             new_drift_retrained_accuracy = get_accuracy(new_drift_retrained_model, X_test, y_test)
             new_drift_retrained_accuracy_bump = new_drift_retrained_accuracy - post_drift_test_accuracy
             
@@ -360,6 +367,8 @@ def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_cons
     for (X_before, y_before), (X_repair_total, y_repair_total), (X_test, y_test), drift_description, drifted_features, drifted_features_types, drift_size, feature_types in Dataset.drift_generator_v3(generator_name):
         try:
             sklearn_model = get_sklearn_model(X_before, y_before)
+            if sklearn_model is None:
+                continue
             pre_drift_accuracy = sklearn_model.best_accuracy
 
             if pre_drift_accuracy < tester_constants.MODEL_MINIMUM_ORIGINAL_ACCURACY:
@@ -385,10 +394,13 @@ def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_cons
 
                 # Comparable Baselines
                 new_all_retrained_model = get_sklearn_model(X_before_repair, y_before_repair)
+                new_drift_retrained_model = get_sklearn_model(X_repair, y_repair)
+                if new_all_retrained_model is None or new_drift_retrained_model is None:
+                    continue
+
                 new_all_retrained_accuracy = get_accuracy(new_all_retrained_model, X_test, y_test)
                 new_all_retrained_accuracy_bump = new_all_retrained_accuracy - post_drift_test_accuracy
 
-                new_drift_retrained_model = get_sklearn_model(X_repair, y_repair)
                 new_drift_retrained_accuracy = get_accuracy(new_drift_retrained_model, X_test, y_test)
                 new_drift_retrained_accuracy_bump = new_drift_retrained_accuracy - post_drift_test_accuracy
 
