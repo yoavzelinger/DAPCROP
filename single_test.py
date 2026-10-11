@@ -26,11 +26,20 @@ def drift_tree(dataset: Dataset,
                candidate_features: Collection[str],
                repair_window_test_sizes: list[float] = tester_constants.REPAIR_WINDOW_TEST_SIZES,
                min_drift_size: int = tester_constants.MIN_DRIFT_SIZE,
-               max_drift_size: int = tester_constants.MAX_DRIFT_SIZE
+               max_drift_size: int = tester_constants.MAX_DRIFT_SIZE,
+               drift_version: int = tester_constants.DRIFT_SYNTHESIZING_VERSION
                ):
     """
     Generate a drifted in a multiple features
     """
+    match drift_version:
+        case 1:
+            drift_generator = dataset.drift_generator
+        case 2:
+            drift_generator = dataset.drift_generator_v2
+        case _:
+            raise ValueError(f"Unsupported drift version: {drift_version} for semi-synthetic drift generation.")
+
     current_min_drift_size = max(min_drift_size, 1)
     current_max_drift_size = len(candidate_features)
     if max_drift_size > 0:
@@ -43,7 +52,7 @@ def drift_tree(dataset: Dataset,
             for drifting_features in combinations(candidate_features, drift_size):
                 print(f"\t\t\tDrifting {', '.join(drifting_features)}")
                 drifted_features_types = sorted([dataset.feature_types[drifting_feature] for drifting_feature in drifting_features])
-                for (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description in dataset.drift_generator(drifting_features):
+                for (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description in drift_generator(drifting_features):
                     yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), (drift_severity_level, drift_description), set(drifting_features), drifted_features_types, drift_size
 
 def get_drifted_nodes(mapped_model: ATreeBasedMappedModel,
@@ -248,29 +257,16 @@ def drift_tree_v2(dataset: Dataset,
                   repair_window_test_sizes: list[float] = tester_constants.REPAIR_WINDOW_TEST_SIZES,
                   min_drift_size: int = tester_constants.MIN_DRIFT_SIZE,
                   max_drift_size: int = tester_constants.MAX_DRIFT_SIZE
-               ):
+                  ):
     """
-    Generate a drifted in a multiple features
+    Deprecated alias for drift_tree with drift_version=2.
     """
-    current_min_drift_size = max(min_drift_size, 1)
-    current_max_drift_size = len(candidate_features)
-    if max_drift_size > 0:
-        current_max_drift_size = min(current_max_drift_size, max_drift_size)
-    for repair_window_test_size in repair_window_test_sizes:
-        print(f"\tRepair window size: {(repair_window_test_size * tester_constants.REPAIR_PROPORTION * 100):.1f}%")
-        dataset.update_repair_window_size(repair_window_test_size)
-        for drift_size in range(current_min_drift_size, current_max_drift_size + 1):
-            print(f"\t\tDrift size: {drift_size} / {current_max_drift_size} features")
-            for drifting_features in combinations(candidate_features, drift_size):
-                print(f"\t\t\tDrifting {', '.join(drifting_features)}")
-                drifted_features_types = sorted([dataset.feature_types[drifting_feature] for drifting_feature in drifting_features])
-                for (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description in dataset.drift_generator_v2(drifting_features):
-                    yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), (drift_severity_level, drift_description), set(drifting_features), drifted_features_types, drift_size
+    return drift_tree(dataset, candidate_features, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size, drift_version=2)
 
 def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, min_drift_size=tester_constants.MIN_DRIFT_SIZE, max_drift_size=tester_constants.MAX_DRIFT_SIZE, diagnosers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_DIAGNOSER, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
     dataset = get_dataset(directory, file_name, file_extension=file_extension)
     
-    for (X_before, y_before), (X_repair_total, y_repair_total), (X_repair, y_repair), (X_test, y_test), (drift_severity_level, drift_description), drifted_features, drifted_features_types, drift_size in drift_tree_v2(dataset, dataset.features, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size):
+    for (X_before, y_before), (X_repair_total, y_repair_total), (X_repair, y_repair), (X_test, y_test), (drift_severity_level, drift_description), drifted_features, drifted_features_types, drift_size in drift_tree(dataset, dataset.features, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size, drift_version=2):
         try:
             sklearn_model = get_sklearn_model(X_before, y_before)
             if sklearn_model is None:
