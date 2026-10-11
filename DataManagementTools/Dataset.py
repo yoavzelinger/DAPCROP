@@ -5,6 +5,7 @@ import pandas as pd
 import math
 
 from typing import Generator, Callable
+from collections.abc import Collection
 
 from .. import TesterConstants as tester_constants
 
@@ -55,6 +56,7 @@ class Dataset:
             one_hot_encoded_dict.update({f"{column_name}_{value}": tester_constants.constants.FeatureType.Binary for value in self.data[column_name].unique()})
             self.data = pd.get_dummies(self.data, columns=[column_name])
         self.feature_types.update(one_hot_encoded_dict)
+        self.features: list[str] = list(self.feature_types.keys())
 
         self.data[self.target_name] = pd.Categorical(y.fillna(y.mode().iloc[0]))
         self.data[self.target_name] = self.data[self.target_name].cat.codes
@@ -145,41 +147,29 @@ class Dataset:
         return multiple_features_concept_drift_generator(data, drift_features_dict, severity_levels)
 
     def drift_generator(self,
-                        drift_features: str | set[str],
-                        partition: str = "after",
-                        severity_levels: tuple = tester_constants.DEFAULT_GENERATED_SEVERITY_LEVELS
-     ) -> Generator[tuple[tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], int, str], None, None]:
+                        drift_features: str | Collection[str],
+                        severity_levels: tuple[int, ...] = tester_constants.DEFAULT_GENERATED_SEVERITY_LEVELS
+     ) -> Generator[tuple[tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], int, str], None, None]:
         """
-        Drift generator for a specific partition
+        Drift generator for the after concept partition.
         
         Parameters:
-            drift_features (str or list): single feature or set of features to drift
-            partition (str): The partition to drift.
-            severity_levels (tuple[int]): The severity levels the column should be drifted to. Default is all.
+            drift_features (str or Collection[str]): Single feature or collection of features to drift.
+            severity_levels (tuple[int, ...]): The severity levels the column should be drifted to. Default is all.
 
         Returns:
-            Generator[tuple[tuple[DataFrame, Series], str], None, None]: 
-                A generator of all possible drifts in the feature and the description of the drift in the given partition name.
-                Each drift represented by the (drifted dataset, original y) and the description of the drift and the drifted features.
+            Generator yielding:
+                (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description
         """
-        assert partition in Dataset.partitions, "Invalid partition name"
-        partition_function_mapping = {
-            "before": self.get_before_concept_data,
-            "after": self.get_after_concept_data,
-            "repair": self.get_repair_data,
-            "test": self.get_test_data
-        }
-        original_X, y = partition_function_mapping[partition]()
+        X_before, y_before = self.get_before_concept_data()
+        original_X, y = self.get_after_concept_data()
         for drifted_X, drift_severity_level, drift_description in self._drift_data_generator(original_X, drift_features, severity_levels):
-            if partition == "before":
-                yield (drifted_X, y), drift_severity_level, f"BEFORE_{drift_description}"
-                continue
             drift_description += f"_window[{self.repair_proportion * self.repair_window_proportion * 100:.1f}%]"
             # split to repair and test
             X_repair, y_repair = drifted_X.iloc[:self.total_repair_size], y.iloc[:self.total_repair_size]
             X_repair_window, y_repair_window = drifted_X.iloc[:self.repair_window_size], y.iloc[:self.repair_window_size]
             X_test, y_test = drifted_X.iloc[self.test_size:], y.iloc[self.test_size:]
-            yield (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description
+            yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description
 
     def get_sorted_data_by_features(self,
                               features: set[str]
@@ -201,8 +191,9 @@ class Dataset:
         return self.data.sort_values(by=feature, ascending=True).reset_index(drop=True)
 
     def drift_generator_v2(self,
-                           drift_features: set[str]
-        ) -> Generator[tuple[tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], str], None, None]:
+                           drift_features: str | Collection[str],
+                           severity_levels: tuple[int, ...] = tester_constants.DUMMY_GENERATED_SEVERITY_LEVELS
+        ) -> Generator[tuple[tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], int, str], None, None]:
         """
         Drift generator for a specific partition - version 2
         
@@ -211,15 +202,18 @@ class Dataset:
         The before concept and after concept will be shuffled before re-partitioning to repair and test.
 
         Parameters:
-            drift_features (list[str]): The features to drift.
+            drift_features (str or Collection[str]): The features to drift.
+            severity_levels (tuple[int, ...]): Dummy placeholder severity levels.
         Returns:
-            A generator with the following data:
-                tuple[DataFrame, Series]: The before concept data (X, y).
-                tuple[DataFrame, Series]: The repair data (X, y).
-                tuple[DataFrame, Series]: The test data (X, y).
-                str: The description of the drift.
+            Generator yielding:
+                (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description
         """
-        sorted_data = self.get_sorted_data_by_features(drift_features)
+        if isinstance(drift_features, str):
+            drift_features = [drift_features]
+        if not any(self.feature_types[feature] == tester_constants.constants.FeatureType.Numeric for feature in drift_features):
+            return
+
+        sorted_data = self.get_sorted_data_by_features(set(drift_features))
 
         drift_type_mapping: dict[str, Callable[[pd.DataFrame], tuple[pd.DataFrame, pd.DataFrame]]] = {
             "top": lambda data: (data.iloc[: self.before_concept_size], data.iloc[-self.after_concept_size: ]), # after is the highest values
@@ -239,7 +233,9 @@ class Dataset:
             X_repair_window, y_repair_window = self.split_features_targets(after_concept_data.iloc[ :self.repair_window_size])
             X_test, y_test = self.split_features_targets(after_concept_data.iloc[-self.test_size: ])
 
-            yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_description
+            for drift_severity_level in severity_levels:
+                yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description
+
 
     @staticmethod
     def drift_generator_v3(generator_name: str

@@ -4,6 +4,7 @@ import pandas as pd
 from itertools import combinations
 from collections import defaultdict
 from typing import Generator
+from collections.abc import Collection
 
 import traceback
 
@@ -21,8 +22,8 @@ def get_dataset(directory: str,
     source = os.path.join(directory, f"{file_name}{file_extension}")
     return Dataset(source)
 
-def drift_tree(mapped_model: ATreeBasedMappedModel,
-               dataset: Dataset,
+def drift_tree(dataset: Dataset,
+               candidate_features: Collection[str],
                repair_window_test_sizes: list[float] = tester_constants.REPAIR_WINDOW_TEST_SIZES,
                min_drift_size: int = tester_constants.MIN_DRIFT_SIZE,
                max_drift_size: int = tester_constants.MAX_DRIFT_SIZE
@@ -31,7 +32,7 @@ def drift_tree(mapped_model: ATreeBasedMappedModel,
     Generate a drifted in a multiple features
     """
     current_min_drift_size = max(min_drift_size, 1)
-    current_max_drift_size = len(mapped_model.model_used_features)
+    current_max_drift_size = len(candidate_features)
     if max_drift_size > 0:
         current_max_drift_size = min(current_max_drift_size, max_drift_size)
     for repair_window_test_size in repair_window_test_sizes:
@@ -39,11 +40,11 @@ def drift_tree(mapped_model: ATreeBasedMappedModel,
         dataset.update_repair_window_size(repair_window_test_size)
         for drift_size in range(current_min_drift_size, current_max_drift_size + 1):
             print(f"\t\tDrift size: {drift_size} / {current_max_drift_size} features")
-            for drifting_features in combinations(mapped_model.model_used_features, drift_size):
+            for drifting_features in combinations(candidate_features, drift_size):
                 print(f"\t\t\tDrifting {', '.join(drifting_features)}")
                 drifted_features_types = sorted([dataset.feature_types[drifting_feature] for drifting_feature in drifting_features])
-                for (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description in dataset.drift_generator(drifting_features, partition="after"):
-                    yield (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), (drift_severity_level, drift_description), set(drifting_features), drifted_features_types, drift_size
+                for (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description in dataset.drift_generator(drifting_features):
+                    yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), (drift_severity_level, drift_description), set(drifting_features), drifted_features_types, drift_size
 
 def get_drifted_nodes(mapped_model: ATreeBasedMappedModel,
                       drifted_features: set[str]
@@ -87,7 +88,9 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
                         X_repair: pd.DataFrame,
                         y_repair: pd.Series,
                         drifted_features: list[str],
-                        diagnosers_data: list[dict[str, object]]
+                        diagnosers_data: list[dict[str, object]],
+                        calculate_oracle_diagnosis: bool = True,
+                        calculate_diagnosis_metrics: bool = True,
                         ) -> Generator[tuple[str, list[int], dict[str, object]], None, None]:
     """
     Generate diagnoses from multiple diagnosers.
@@ -114,9 +117,10 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
 
     faulty_features_nodes = group_by_feature(mapped_model, true_faulty_nodes_indices)
     
-    yield Oracle.__name__, true_faulty_nodes_indices, { 
-        tester_constants.DRIFTED_FEATURES_COLUMN_NAME: ", ".join(map(lambda feature: f"{feature}: {faulty_features_nodes[feature]}", faulty_features_nodes))
-    }
+    if calculate_oracle_diagnosis:
+        yield Oracle.__name__, true_faulty_nodes_indices, { 
+            tester_constants.DRIFTED_FEATURES_COLUMN_NAME: ", ".join(map(lambda feature: f"{feature}: {faulty_features_nodes[feature]}", faulty_features_nodes))
+        }
 
     drifted_features = list(faulty_features_nodes.keys())
 
@@ -133,17 +137,16 @@ def diagnosis_generator(mapped_model: ATreeBasedMappedModel,
         diagnosis = diagnoses[0] if diagnoses else []
         detected_faulty_features = set(group_by_feature(mapped_model, diagnosis).keys())
         
-        wasted_effort = get_wasted_effort(mapped_model, diagnoses, faulty_features_nodes)
-        
         diagnosis_results = {
-            f"{diagnoser_output_name} {tester_constants.FAULTY_FEATURES_NAME_SUFFIX}": ", ".join(detected_faulty_features),
+            f"{diagnoser_output_name} {tester_constants.FAULTY_FEATURES_NAME_SUFFIX}": ", ".join(map(str, detected_faulty_features)),
             f"{diagnoser_output_name} {tester_constants.DIAGNOSES_NAME_SUFFIX}": ", ".join(map(str, diagnoses)),
-            f"{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}": wasted_effort
+            f"{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}": \
+                get_wasted_effort(mapped_model, diagnoses, faulty_features_nodes) if calculate_diagnosis_metrics else 0
         }
 
         for K in tester_constants.CORRECTLY_IDENTIFIED_K_LIST:
             diagnosis_results[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=K)}"] = \
-                get_top_k(mapped_model, diagnoses, drifted_features, K) * 100
+                get_top_k(mapped_model, diagnoses, drifted_features, K) * 100 if calculate_diagnosis_metrics else 0
         
         yield diagnoser_output_name, diagnosis, diagnosis_results
 
@@ -165,7 +168,7 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
     
     pre_drift_repair_accuracy = get_accuracy(sklearn_model, *dataset.get_repair_data())
     
-    for (X_repair_total, y_repair_total), (X_repair, y_repair), (X_test, y_test), (drift_severity_level, drift_description), drifted_features, drifted_features_types, drift_size in drift_tree(mapped_model, dataset, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size):
+    for (X_before, y_before), (X_repair_total, y_repair_total), (X_repair, y_repair), (X_test, y_test), (drift_severity_level, drift_description), drifted_features, drifted_features_types, drift_size in drift_tree(dataset, mapped_model.model_used_features, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size):
         try:
             if X_repair.empty or X_test.empty:
                 continue
@@ -241,6 +244,7 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
                             )
             
 def drift_tree_v2(dataset: Dataset,
+                  candidate_features: Collection[str],
                   repair_window_test_sizes: list[float] = tester_constants.REPAIR_WINDOW_TEST_SIZES,
                   min_drift_size: int = tester_constants.MIN_DRIFT_SIZE,
                   max_drift_size: int = tester_constants.MAX_DRIFT_SIZE
@@ -249,27 +253,24 @@ def drift_tree_v2(dataset: Dataset,
     Generate a drifted in a multiple features
     """
     current_min_drift_size = max(min_drift_size, 1)
-    current_max_drift_size = len(dataset.feature_types)
+    current_max_drift_size = len(candidate_features)
     if max_drift_size > 0:
         current_max_drift_size = min(current_max_drift_size, max_drift_size)
     for repair_window_test_size in repair_window_test_sizes:
-        print(f"\tRepair window size: {repair_window_test_size * tester_constants.REPAIR_PROPORTION * 100}%")
+        print(f"\tRepair window size: {(repair_window_test_size * tester_constants.REPAIR_PROPORTION * 100):.1f}%")
         dataset.update_repair_window_size(repair_window_test_size)
         for drift_size in range(current_min_drift_size, current_max_drift_size + 1):
             print(f"\t\tDrift size: {drift_size} / {current_max_drift_size} features")
-            for drifting_features in combinations(dataset.feature_types.keys(), drift_size):
+            for drifting_features in combinations(candidate_features, drift_size):
                 print(f"\t\t\tDrifting {', '.join(drifting_features)}")
                 drifted_features_types = sorted([dataset.feature_types[drifting_feature] for drifting_feature in drifting_features])
-                if not is_drift_contains_numeric_features(drifted_features_types): # TODO: Remove the condition
-                    print(f"\t\t\t\tSkipping non-numeric drift: {', '.join(drifting_features)}")
-                    continue
-                for (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_description in dataset.drift_generator_v2(drifting_features):
-                    yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_description, set(drifting_features), drifted_features_types, drift_size
+                for (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description in dataset.drift_generator_v2(drifting_features):
+                    yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), (drift_severity_level, drift_description), set(drifting_features), drifted_features_types, drift_size
 
 def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, min_drift_size=tester_constants.MIN_DRIFT_SIZE, max_drift_size=tester_constants.MAX_DRIFT_SIZE, diagnosers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_DIAGNOSER, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
     dataset = get_dataset(directory, file_name, file_extension=file_extension)
     
-    for (X_before, y_before), (X_repair_total, y_repair_total), (X_repair, y_repair), (X_test, y_test), drift_description, drifted_features, drifted_features_types, drift_size in drift_tree_v2(dataset, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size):
+    for (X_before, y_before), (X_repair_total, y_repair_total), (X_repair, y_repair), (X_test, y_test), (drift_severity_level, drift_description), drifted_features, drifted_features_types, drift_size in drift_tree_v2(dataset, dataset.features, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size):
         try:
             sklearn_model = get_sklearn_model(X_before, y_before)
             if sklearn_model is None:
@@ -318,7 +319,7 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
                 tester_constants.REPAIR_WINDOW_SIZE_COLUMN_NAME: dataset.repair_window_size,
                 tester_constants.DRIFT_SIZE_COLUMN_NAME: drift_size,
                 tester_constants.TOTAL_DRIFT_TYPE_COLUMN_NAME: get_total_drift_types(drifted_features_types),
-                tester_constants.DRIFT_SEVERITY_LEVEL_COLUMN_NAME: 1, # v2 does not support severity levels
+                tester_constants.DRIFT_SEVERITY_LEVEL_COLUMN_NAME: drift_severity_level,
                 tester_constants.DRIFTED_FEATURES_TYPES_COLUMN_NAME: get_drifted_features_types_string(drifted_features_types),
                 tester_constants.DRIFT_DESCRIPTION_COLUMN_NAME: drift_description,
                 tester_constants.ORIGINAL_ACCURACY_COLUMN_NAME: pre_drift_accuracy * 100,
@@ -358,13 +359,14 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
                             f"Scenario: {scenario_description}"
                             )
 
-def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
+def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, diagnosers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_DIAGNOSER, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
     """
     Run tests for v3 synthetic MOA drift for a single generator type.
     Iterates over all configs of the given generator, yielding results one by one.
     Diagnosers are skipped; only fixers are evaluated.
     """
     for (X_before, y_before), (X_repair_total, y_repair_total), (X_test, y_test), drift_description, drifted_features, drifted_features_types, drift_size, feature_types in Dataset.drift_generator_v3(generator_name):
+        repair_window_test_size = None
         try:
             sklearn_model = get_sklearn_model(X_before, y_before)
             if sklearn_model is None:
@@ -425,34 +427,25 @@ def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_cons
                     f"{tester_constants.NEW_ALL_RETRAIN_COLUMNS_PREFIX} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": new_all_retrained_accuracy_bump * 100
                 }
 
-                # Skip diagnosers — fill diagnosis columns with empty defaults
-                for diagnoser_output_name in tester_constants.diagnosers_output_names:
-                    current_results_dict[f"{diagnoser_output_name} {tester_constants.DIAGNOSES_NAME_SUFFIX}"] = ""
-                    current_results_dict[f"{diagnoser_output_name} {tester_constants.WASTED_EFFORT_NAME_SUFFIX}"] = 0
-                    current_results_dict[f"{diagnoser_output_name} {tester_constants.FAULTY_FEATURES_NAME_SUFFIX}"] = ""
-                    for k in tester_constants.CORRECTLY_IDENTIFIED_K_LIST:
-                        current_results_dict[f"{diagnoser_output_name} {tester_constants.CORRECTLY_IDENTIFIED_NAME_SUFFIX_TEMPLATE.format(k=k)}"] = 0
-
-                # Oracle drifted features column
-                current_results_dict[tester_constants.DRIFTED_FEATURES_COLUMN_NAME] = ", ".join(map(str, drifted_features))
-
-                # Run fixers with Oracle (all nodes as faulty) and each diagnoser placeholder
-                all_node_indices = list(mapped_model.get_indices())
-
-                for diagnoser_output_name in [Oracle.__name__] + tester_constants.diagnosers_output_names:
+            try:
+                for diagnoser_output_name, faulty_nodes_indices, diagnosis_results in diagnosis_generator(mapped_model, X_repair, y_repair, drifted_features, diagnosers_data, calculate_oracle_diagnosis=False, calculate_diagnosis_metrics=False):
+                    current_results_dict.update(diagnosis_results)
                     for fixer_data in fixers_data:
                         fixer_class_name = fixer_data["class_name"]
                         fixer_output_name = fixer_data.get("output_name", fixer_class_name)
                         fixer_parameters = fixer_data.get("parameters")
                         fixer_class = get_fixer(fixer_class_name)
-                        fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=all_node_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
+                        fixer: AFixer = fixer_class(mapped_model, X_repair, y_repair, faulty_nodes_indices=faulty_nodes_indices, X_prior=X_repair, y_prior=y_repair, **fixer_parameters)
                         fixed_model = fixer.fix_model()
                         fixed_test_accuracy = get_accuracy(fixed_model, X_test, y_test)
                         test_accuracy_bump = fixed_test_accuracy - post_drift_test_accuracy
-                        current_results_dict[f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}"] = fixed_test_accuracy * 100
-                        current_results_dict[f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}"] = test_accuracy_bump * 100
-
+                        current_results_dict.update({
+                            f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_NAME_SUFFIX}": fixed_test_accuracy * 100,
+                            f"{diagnoser_output_name}-{fixer_output_name} {tester_constants.FIX_ACCURACY_INCREASE_NAME_SUFFIX}": test_accuracy_bump * 100
+                        })
                 yield current_results_dict
+            except EmptyOracleError:
+                continue
         except Exception as e:
             exception_class = e.__class__.__name__
             scenario_description = f"{drift_description}, repair window size: {repair_window_test_size}"
