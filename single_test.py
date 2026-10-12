@@ -31,13 +31,13 @@ def drift_tree(dataset: Dataset,
     """
     Generate a drifted in a multiple features
     """
-    match tester_constants.DRIFT_SYNTHESIZING_VERSION:
-        case 1:
-            drift_generator = dataset.drift_generator
-        case 2:
-            drift_generator = dataset.drift_generator_v2
+    match tester_constants.DRIFT_SYNTHESIS_TYPE:
+        case tester_constants.DriftSynthesisType.FEATURE_SHIFT | 1 | "feature_shift":
+            drift_generator = dataset.feature_shift_drift_generator
+        case tester_constants.DriftSynthesisType.DISTRIBUTION_EDGE | 2 | "distribution_edge":
+            drift_generator = dataset.distribution_edge_drift_generator
         case _:
-            raise ValueError(f"Unsupported drift version: {tester_constants.DRIFT_SYNTHESIZING_VERSION} for semi-synthetic drift generation.")
+            raise ValueError(f"Unsupported drift synthesis type: {tester_constants.DRIFT_SYNTHESIS_TYPE} for semi-synthetic drift generation.")
 
     current_min_drift_size = max(min_drift_size, 1)
     current_max_drift_size = len(candidate_features)
@@ -306,7 +306,7 @@ def format_scenario_exception(exception: Exception, scenario_description: str) -
         f"Scenario: {scenario_description}"
     )
 
-def run_single_test(directory, file_name, file_extension: str = ".csv", repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, min_drift_size=tester_constants.MIN_DRIFT_SIZE, max_drift_size=tester_constants.MAX_DRIFT_SIZE, diagnosers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_DIAGNOSER, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
+def run_feature_shift_single_test(directory, file_name, file_extension: str = ".csv", repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, min_drift_size=tester_constants.MIN_DRIFT_SIZE, max_drift_size=tester_constants.MAX_DRIFT_SIZE, diagnosers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_DIAGNOSER, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
     dataset = get_dataset(directory, file_name, file_extension=file_extension)
 
     X_before, y_before = dataset.get_before_concept_data()
@@ -367,7 +367,10 @@ def run_single_test(directory, file_name, file_extension: str = ".csv", repair_w
             scenario_description = f"{drift_description}, repair window size: {dataset.repair_window_proportion}"
             yield format_scenario_exception(e, scenario_description)
 
-def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, min_drift_size=tester_constants.MIN_DRIFT_SIZE, max_drift_size=tester_constants.MAX_DRIFT_SIZE, diagnosers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_DIAGNOSER, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
+# Backward compatibility alias
+run_single_test = run_feature_shift_single_test
+
+def run_distribution_edge_single_test(directory, file_name, file_extension: str = ".csv", repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, min_drift_size=tester_constants.MIN_DRIFT_SIZE, max_drift_size=tester_constants.MAX_DRIFT_SIZE, diagnosers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_DIAGNOSER, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
     dataset = get_dataset(directory, file_name, file_extension=file_extension)
     
     for (X_before, y_before), (X_repair_total, y_repair_total), (X_repair, y_repair), (X_test, y_test), (drift_severity_level, drift_description), drifted_features, drifted_features_types, drift_size in drift_tree(dataset, dataset.features, repair_window_test_sizes=repair_window_test_sizes, min_drift_size=min_drift_size, max_drift_size=max_drift_size):
@@ -427,13 +430,16 @@ def run_single_test_v2(directory, file_name, file_extension: str = ".csv", repai
             scenario_description = f"{drift_description}, repair window size: {dataset.repair_window_proportion}"
             yield format_scenario_exception(e, scenario_description)
 
-def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, diagnosers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_DIAGNOSER, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
+# Backward compatibility alias
+run_single_test_v2 = run_distribution_edge_single_test
+
+def run_moa_stream_single_test(generator_name: str, repair_window_test_sizes=tester_constants.REPAIR_WINDOW_TEST_SIZES, diagnosers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_DIAGNOSER, fixers_data: list[dict[str, object]] = tester_constants.DEFAULT_TESTING_FIXER):
     """
-    Run tests for v3 synthetic MOA drift for a single generator type.
+    Run tests for synthetic MOA-stream drift for a single generator type.
     Iterates over all configs of the given generator, yielding results one by one.
     Diagnosers are skipped; only fixers are evaluated.
     """
-    for (X_before, y_before), (X_repair_total, y_repair_total), (X_test, y_test), drift_description, drifted_features, drifted_features_types, drift_size, feature_types in Dataset.drift_generator_v3(generator_name):
+    for (X_before, y_before), (X_repair_total, y_repair_total), (X_test, y_test), drift_description, drifted_features, drifted_features_types, drift_size, feature_types in Dataset.moa_stream_drift_generator(generator_name):
         repair_window_test_size = None
         try:
             sklearn_model = get_sklearn_model(X_before, y_before)
@@ -493,6 +499,9 @@ def run_single_test_v3(generator_name: str, repair_window_test_sizes=tester_cons
             scenario_description = f"{drift_description}, repair window size: {repair_window_test_size}"
             yield format_scenario_exception(e, scenario_description)
 
+# Backward compatibility alias
+run_single_test_v3 = run_moa_stream_single_test
+
 
 def get_example_mapped_model(directory=tester_constants.DATASETS_DIRECTORY_FULL_PATH, file_name=tester_constants.EXAMPLE_FILE_NAME):
     dataset = get_dataset(directory, file_name)
@@ -501,7 +510,7 @@ def get_example_mapped_model(directory=tester_constants.DATASETS_DIRECTORY_FULL_
     return get_mapped_model(sklearn_model, dataset.feature_types, X_train, y_train)
 
 def sanity_run(directory=tester_constants.DATASETS_DIRECTORY_FULL_PATH, file_name=tester_constants.EXAMPLE_FILE_NAME, diagnosers_data=tester_constants.DEFAULT_TESTING_DIAGNOSER):
-    for result in run_single_test(directory=directory, file_name=file_name, diagnosers_data=diagnosers_data):
+    for result in run_feature_shift_single_test(directory=directory, file_name=file_name, diagnosers_data=diagnosers_data):
         print(result)
         
 if __name__ == "__main__":
