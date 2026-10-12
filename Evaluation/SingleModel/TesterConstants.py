@@ -2,10 +2,18 @@ from os import path as os_path
 from json import load as load_json
 from datetime import datetime
 
+from enum import Enum
+
 from Methodology import constants
 
 from Methodology.Diagnosers import Oracle
 from Methodology.Fixers import *
+
+
+class DriftSynthesisType(str, Enum):
+    FEATURE_SHIFT = "feature_shift"
+    DISTRIBUTION_EDGE = "distribution_edge"
+    MOA_STREAM = "moa_stream"
 
 
 # Dataset partitions sizes
@@ -15,7 +23,8 @@ TEST_PROPORTION = 0.2
 PROPORTIONS_TUPLE = (BEFORE_PROPORTION, REPAIR_PROPORTION, TEST_PROPORTION)
 DEFAULT_REPAIR_WINDOW_PROPORTION = 1
 
-DRIFT_SYNTHESIZING_VERSION = 1
+DRIFT_SYNTHESIS_TYPE: DriftSynthesisType = DriftSynthesisType.FEATURE_SHIFT
+DRIFT_SYNTHESIZING_VERSION = DRIFT_SYNTHESIS_TYPE
 
 VALIDATION_SIZE = 0.2
 

@@ -61,7 +61,7 @@ class Dataset:
         self.data[self.target_name] = pd.Categorical(y.fillna(y.mode().iloc[0]))
         self.data[self.target_name] = self.data[self.target_name].cat.codes
 
-        if tester_constants.DRIFT_SYNTHESIZING_VERSION == 1:  # shuffle data - same shuffle always
+        if tester_constants.DRIFT_SYNTHESIS_TYPE in (tester_constants.DriftSynthesisType.FEATURE_SHIFT, 1):  # shuffle data - same shuffle always
             self.data = self.data.sample(frac=1, random_state=tester_constants.constants.RANDOM_STATE).reset_index(drop=True)
 
         self.data.attrs["name"] = self.name
@@ -146,12 +146,12 @@ class Dataset:
         drift_features_dict = {feature: self.feature_types[feature] for feature in drift_features}
         return multiple_features_concept_drift_generator(data, drift_features_dict, severity_levels)
 
-    def drift_generator(self,
+    def feature_shift_drift_generator(self,
                         drift_features: str | Collection[str],
                         severity_levels: tuple[int, ...] = tester_constants.DEFAULT_GENERATED_SEVERITY_LEVELS
      ) -> Generator[tuple[tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], int, str], None, None]:
         """
-        Drift generator for the after concept partition.
+        Feature-shift drift generator for the after concept partition.
         
         Parameters:
             drift_features (str or Collection[str]): Single feature or collection of features to drift.
@@ -170,6 +170,9 @@ class Dataset:
             X_repair_window, y_repair_window = drifted_X.iloc[:self.repair_window_size], y.iloc[:self.repair_window_size]
             X_test, y_test = drifted_X.iloc[self.test_size:], y.iloc[self.test_size:]
             yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description
+
+    # Backward compatibility alias
+    drift_generator = feature_shift_drift_generator
 
     def get_sorted_data_by_features(self,
                               features: set[str]
@@ -190,12 +193,12 @@ class Dataset:
         # sort by the feature
         return self.data.sort_values(by=feature, ascending=True).reset_index(drop=True)
 
-    def drift_generator_v2(self,
+    def distribution_edge_drift_generator(self,
                            drift_features: str | Collection[str],
                            severity_levels: tuple[int, ...] = tester_constants.DUMMY_GENERATED_SEVERITY_LEVELS
         ) -> Generator[tuple[tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], int, str], None, None]:
         """
-        Drift generator for a specific partition - version 2
+        Distribution-edge drift generator for a specific partition.
         
         The drift is done by sorting the data by the given features and splitting the data to before and after concept.
         The post-drift will be on the top or bottom of the sorted data.
@@ -236,12 +239,14 @@ class Dataset:
             for drift_severity_level in severity_levels:
                 yield (X_before, y_before), (X_repair, y_repair), (X_repair_window, y_repair_window), (X_test, y_test), drift_severity_level, drift_description
 
+    # Backward compatibility alias
+    drift_generator_v2 = distribution_edge_drift_generator
 
     @staticmethod
-    def drift_generator_v3(generator_name: str
+    def moa_stream_drift_generator(generator_name: str
     ) -> Generator[tuple[tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], tuple[pd.DataFrame, pd.Series], str], None, None]:
         """
-        Generate synthetic concept drift data using MOA generators for a given generator type.
+        Generate synthetic concept drift data using MOA stream generators for a given generator type.
 
         Yields for each scenario:
             (X_before, y_before), (X_repair_full, y_repair_full), (X_test, y_test),
@@ -270,3 +275,6 @@ class Dataset:
 
             yield (X_before, y_before), (X_repair_full, y_repair_full), (X_test, y_test), \
                     description, drifted_features, drifted_features_types, drift_size, feature_types
+
+    # Backward compatibility alias
+    drift_generator_v3 = moa_stream_drift_generator

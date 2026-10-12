@@ -8,7 +8,15 @@ from scipy import __version__ as scipy_version
 from warnings import filterwarnings, simplefilter as warnings_simplefilter
 
 import Evaluation.TesterConstants as tester_constants
-from .single_test import run_single_test, run_single_test_v2, run_single_test_v3, sanity_run
+from .single_test import (
+    run_feature_shift_single_test,
+    run_distribution_edge_single_test,
+    run_moa_stream_single_test,
+    run_single_test,
+    run_single_test_v2,
+    run_single_test_v3,
+    sanity_run,
+)
 
 def main():
     print("Initializing")
@@ -28,7 +36,7 @@ def main():
     parser.add_argument("-d", "--drift_size", type=int, help=f"size of the drift, default is between {tester_constants.MIN_DRIFT_SIZE} and {tester_constants.MAX_DRIFT_SIZE}", default=-1)
     parser.add_argument("-c", "--count", type=int, help="Number of tests to run, default is running all", default=-1)
     parser.add_argument("-t", "--test", type=str, help="Test dataset to run if you want to run a specific test")
-    parser.add_argument("-v", "--version", type=int, help=f"Version of the drift synthesizing to use (1=steric, 2=edge values, 3=MOA synthetic), default is {tester_constants.DRIFT_SYNTHESIZING_VERSION}", default=0)
+    parser.add_argument("-v", "--version", "--drift-type", type=str, help=f"Drift synthesis type: 'feature_shift' (or 1), 'distribution_edge' (or 2), 'moa_stream' (or 3), default is {tester_constants.DRIFT_SYNTHESIS_TYPE.value}", default="")
 
     args = parser.parse_args()
 
@@ -41,8 +49,18 @@ def main():
         sys.exit(0)
 
     if args.version:
-        assert args.version in (1, 2, 3), f"Unsupported drift synthesizing version: {args.version}. Supported versions are 1, 2, and 3."
-        tester_constants.DRIFT_SYNTHESIZING_VERSION = args.version
+        version_str = str(args.version).lower()
+        mapping = {
+            "1": tester_constants.DriftSynthesisType.FEATURE_SHIFT,
+            "feature_shift": tester_constants.DriftSynthesisType.FEATURE_SHIFT,
+            "2": tester_constants.DriftSynthesisType.DISTRIBUTION_EDGE,
+            "distribution_edge": tester_constants.DriftSynthesisType.DISTRIBUTION_EDGE,
+            "3": tester_constants.DriftSynthesisType.MOA_STREAM,
+            "moa_stream": tester_constants.DriftSynthesisType.MOA_STREAM,
+        }
+        assert version_str in mapping, f"Unsupported drift synthesis type/version: {args.version}. Supported types are feature_shift (1), distribution_edge (2), and moa_stream (3)."
+        tester_constants.DRIFT_SYNTHESIS_TYPE = mapping[version_str]
+        tester_constants.DRIFT_SYNTHESIZING_VERSION = tester_constants.DRIFT_SYNTHESIS_TYPE
 
     specific_datasets_string = ""
     specific_datasets, specific_prefixes = args.names, args.prefixes
@@ -84,7 +102,7 @@ def main():
     errors_list = []
 
     ###### Run Tests #####
-    if tester_constants.DRIFT_SYNTHESIZING_VERSION == 3:
+    if tester_constants.DRIFT_SYNTHESIS_TYPE in (tester_constants.DriftSynthesisType.MOA_STREAM, 3, "moa_stream"):
         generators = list(tester_constants.MOA_GENERATORS)
 
         # Filter by name if -n flag provided
@@ -99,7 +117,7 @@ def main():
 
         for generator_name in generators:
             print(f"Running tests for generator: {generator_name}")
-            for test_result in run_single_test_v3(generator_name, repair_window_test_sizes=repair_window_test_sizes, diagnosers_data=tester_constants.diagnosers_data, fixers_data=tester_constants.fixers_data):
+            for test_result in run_moa_stream_single_test(generator_name, repair_window_test_sizes=repair_window_test_sizes, diagnosers_data=tester_constants.diagnosers_data, fixers_data=tester_constants.fixers_data):
                 if isinstance(test_result, Exception):
                     if not skip_exceptions:
                         raise test_result
@@ -107,7 +125,11 @@ def main():
                     continue
                 raw_results_list.append(test_result)
     else:
-        single_test_function = run_single_test if tester_constants.DRIFT_SYNTHESIZING_VERSION == 1 else run_single_test_v2
+        single_test_function = (
+            run_feature_shift_single_test
+            if tester_constants.DRIFT_SYNTHESIS_TYPE in (tester_constants.DriftSynthesisType.FEATURE_SHIFT, 1, "feature_shift")
+            else run_distribution_edge_single_test
+        )
 
         with open(tester_constants.DATASET_DESCRIPTION_FILE_PATH, "r") as descriptions_file:
             descriptions_reader = DictReader(descriptions_file)
@@ -145,7 +167,8 @@ def main():
         temp_files_suffix += f"_{specific_datasets_string}"
 
     output_files_suffix, output_path = args.output, tester_constants.OUTPUT_DIRECTORY_FULL_PATH
-    output_files_suffix += f"_v{tester_constants.DRIFT_SYNTHESIZING_VERSION}"
+    drift_type_suffix = tester_constants.DRIFT_SYNTHESIS_TYPE.value if hasattr(tester_constants.DRIFT_SYNTHESIS_TYPE, "value") else str(tester_constants.DRIFT_SYNTHESIS_TYPE)
+    output_files_suffix += f"_{drift_type_suffix}"
     if temp_files_suffix:
         output_path = tester_constants.TEMP_OUTPUT_DIRECTORY_FULL_PATH
         if not output_files_suffix.startswith(tester_constants.DEFAULT_RESULTS_FILENAME_PREFIX):
