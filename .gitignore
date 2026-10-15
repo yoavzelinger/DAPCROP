@@ -1,25 +1,45 @@
-# IDE-related folders
-**/__pycache__/
-**/.vscode/
+# Python cache and byte-code
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 
-# system files
-*.nfs*
-.DS_Store
+# Python distribution and packaging
+build/
+dist/
+*.egg-info/
+.eggs/
 
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
 
-# cluster files
-*.sh
-*.out
-
-# Testing files
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
 tests.ipynb
 
-# temporary files
+# IDE & Editor folders
+.vscode/
+.idea/
+
+# System & OS files
+.DS_Store
+*.nfs*
+Thumbs.db
+
+# Project memory and local agent notes
+MEMORY.md
+*.local.md
+
+# Cluster output and temporary files
+*.out
 results/**/*temp*
 **/Shaked Code/
 
-# old results
+# Old & temporary results
 results/old results/*
-
-# temporary excel files
 results/*~*.xlsx
